@@ -83,6 +83,8 @@ THIRD_PARTY_LUA_A_SRCS =					\
 	third_party/lua/liolib.c				\
 	third_party/lua/llex.c					\
 	third_party/lua/llock.c					\
+	third_party/lua/lpath.c					\
+	third_party/lua/lre.c					\
 	third_party/lua/lmathlib.c				\
 	third_party/lua/lmem.c					\
 	third_party/lua/lnotice.c				\
@@ -141,6 +143,7 @@ THIRD_PARTY_LUA_A_DIRECTDEPS =					\
 	THIRD_PARTY_GDTOA					\
 	THIRD_PARTY_LINENOISE					\
 	THIRD_PARTY_MUSL					\
+	THIRD_PARTY_REGEX					\
 	THIRD_PARTY_TZ						\
 
 THIRD_PARTY_LUA_A_DEPS :=					\
