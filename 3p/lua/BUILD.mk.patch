@@ -147,6 +147,8 @@ THIRD_PARTY_LUA_A_DIRECTDEPS =					\
 	THIRD_PARTY_MUSL					\
 	THIRD_PARTY_REGEX					\
 	THIRD_PARTY_TZ						\
+	THIRD_PARTY_ARGON2					\
+	THIRD_PARTY_SQLITE3
 
 THIRD_PARTY_LUA_A_DEPS :=					\
 	$(call uniq,$(foreach x,$(THIRD_PARTY_LUA_A_DIRECTDEPS),$($(x))))
@@ -158,9 +160,7 @@ $(THIRD_PARTY_LUA_A):						\
 
 $(THIRD_PARTY_LUA_A).pkg:					\
 		$(THIRD_PARTY_LUA_A_OBJS)			\
-		$(foreach x,$(THIRD_PARTY_LUA_A_DIRECTDEPS),$($(x)_A).pkg)	\
-		o/$(MODE)/third_party/argon2/argon2.a.pkg	\
-		o/$(MODE)/third_party/sqlite3/libsqlite3.a.pkg
+		$(foreach x,$(THIRD_PARTY_LUA_A_DIRECTDEPS),$($(x)_A).pkg)
 
 o/$(MODE)/third_party/lua/lmathlib.o				\
 o//third_party/lua/lgc.o: private				\
@@ -261,9 +261,7 @@ o/$(MODE)/third_party/lua/lua.dbg:				\
 		o/$(MODE)/third_party/lua/lua.pkg		\
 		o/$(MODE)/third_party/lua/lua.main.o		\
 		$(CRT)						\
-		$(APE_NO_MODIFY_SELF)				\
-		o/$(MODE)/third_party/argon2/argon2.a		\
-		o/$(MODE)/third_party/sqlite3/libsqlite3.a
+		$(APE_NO_MODIFY_SELF)
 	@$(APELINK)
 
 ################################################################################
