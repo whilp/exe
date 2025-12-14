@@ -11,4 +11,7 @@ test: o/3p/lua
 	3p/cosmopolitan/test
 	3p/lua/test
 
-.PHONY: test
+clean:
+	rm -rf o
+
+.PHONY: test clean

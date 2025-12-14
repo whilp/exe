@@ -17,6 +17,7 @@ get_ext = $(if $(findstring .tar.gz,$(1)),.tar.gz,$(suffix $(1)))
 pkg = $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$(dir $@))))$(call get_ext,$(notdir $($(*)_url)))
 
 $(o)/%: %/digest
+	mkdir -p $(o)/$*
 	cd $(o)/$* && $(if $(findstring .tar.gz,$(pkg)),$(tar) -xzf,$(unzip) -q -o) $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$*)))$(call get_ext,$(notdir $($*_url)))
 	touch $@
 
