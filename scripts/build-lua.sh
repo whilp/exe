@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euxo pipefail
 
 echo "=== Starting Lua build with cosmopolitan ==="
 echo "Date: $(date)"
