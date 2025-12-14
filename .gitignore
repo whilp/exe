@@ -1,0 +1,17 @@
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+
+# Temporary build directories
+lua-*/
+cosmocc/
+*.tar.gz
+*.zip
+superconfigure
+
+# Keep bin directory but ignore its contents for now
+# We may want to commit built executables later
+# bin/*
+# !bin/.gitkeep

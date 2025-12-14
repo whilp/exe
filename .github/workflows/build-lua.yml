@@ -1,0 +1,74 @@
+name: Build Lua with Cosmopolitan
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  build-lua:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential wget unzip
+
+      - name: Download and setup cosmocc
+        run: |
+          # Download the latest cosmocc release
+          wget https://cosmo.zip/pub/cosmocc/cosmocc.zip
+          unzip cosmocc.zip
+          # Add cosmocc to PATH
+          echo "$PWD/cosmocc/bin" >> $GITHUB_PATH
+
+      - name: Download superconfigure
+        run: |
+          wget https://cosmo.zip/pub/cosmos/superconfigure
+          chmod +x superconfigure
+
+      - name: Download Lua source
+        run: |
+          wget https://www.lua.org/ftp/lua-5.4.7.tar.gz
+          tar xzf lua-5.4.7.tar.gz
+
+      - name: Build Lua with cosmopolitan
+        run: |
+          cd lua-5.4.7
+          # Use superconfigure to configure for cosmopolitan
+          ../superconfigure
+          # Build with cosmocc
+          make CC=cosmocc
+
+      - name: Copy executable to bin
+        run: |
+          mkdir -p bin
+          # Copy the built lua executable
+          # The exact path may vary - we'll need to find it
+          find lua-5.4.7 -name "lua" -type f -executable -exec cp {} bin/ \;
+          # Rename to indicate it's a cosmopolitan binary
+          if [ -f bin/lua ]; then
+            mv bin/lua bin/lua.com
+          fi
+
+      - name: Upload executable as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lua-cosmopolitan
+          path: bin/lua.com
+          if-no-files-found: error
+
+      - name: Commit bin directory
+        if: github.event_name == 'push'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add bin/
+          git diff --staged --quiet || git commit -m "Add built Lua executable"
+          git push || echo "No changes to push or push failed"
