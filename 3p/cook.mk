@@ -1,8 +1,9 @@
 o := o
 cosmos_bin := $(CURDIR)/$(o)/3p/cosmos/bin
 cosmocc_dir := $(CURDIR)/$(o)/3p/cosmocc
+lua_bin := $(CURDIR)/$(o)/3p/lua/bin
 
-export PATH := $(cosmos_bin):$(PATH)
+export PATH := $(lua_bin):$(cosmos_bin):$(PATH)
 export COSMOCC := $(cosmocc_dir)
 
 curl := curl
@@ -10,6 +11,7 @@ sha256sum := sha256sum
 unzip := unzip
 tar := tar
 make := make
+lua := lua
 
 get_ext = $(if $(findstring .tar.gz,$(1)),.tar.gz,$(suffix $(1)))
 pkg = $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$(dir $@))))$(call get_ext,$(notdir $($(*)_url)))
