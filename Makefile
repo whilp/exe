@@ -1,0 +1,2 @@
+include 3p/cook.mk
+include 3p/cosmocc/cook.mk
