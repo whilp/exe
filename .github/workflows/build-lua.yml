@@ -20,62 +20,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential wget unzip
 
-      - name: Download and setup cosmocc
-        run: |
-          # Download the latest cosmocc release
-          wget -q https://cosmo.zip/pub/cosmocc/cosmocc.zip
-          unzip -qo cosmocc.zip
-          # Add cosmocc to PATH
-          echo "$PWD/cosmocc/bin" >> $GITHUB_PATH
-
-      - name: Download superconfigure
-        run: |
-          wget -q https://cosmo.zip/pub/cosmos/superconfigure
-          chmod +x superconfigure
-
-      - name: Download Lua source
-        run: |
-          wget -q https://www.lua.org/ftp/lua-5.4.7.tar.gz
-          tar xzf lua-5.4.7.tar.gz
-
       - name: Build Lua with cosmopolitan
         run: |
-          set -o pipefail
-          mkdir -p logs
-          exec > >(tee -a logs/build-$(date +%Y%m%d-%H%M%S).log) 2>&1
-
-          echo "=== Starting Lua build with cosmopolitan ==="
-          echo "Date: $(date)"
-          echo "PWD: $PWD"
-          echo "cosmocc location: $(which cosmocc || echo 'not in PATH')"
-
-          cd lua-5.4.7
-          echo "=== Running superconfigure ==="
-          ../superconfigure
-
-          echo "=== Building with cosmocc ==="
-          make CC=cosmocc
-
-          echo "=== Build complete ==="
-
-      - name: Copy executable to bin
-        run: |
-          set -o pipefail
-          exec >> logs/build-*.log 2>&1
-
-          echo "=== Copying executable to bin ==="
-          mkdir -p bin
-          # Copy the built lua executable
-          # The exact path may vary - we'll need to find it
-          find lua-5.4.7 -name "lua" -type f -executable -exec cp {} bin/ \;
-          # Rename to indicate it's a cosmopolitan binary
-          if [ -f bin/lua ]; then
-            mv bin/lua bin/lua.com
-            echo "Successfully created bin/lua.com"
-          else
-            echo "ERROR: lua executable not found"
-            exit 1
-          fi
+          chmod +x scripts/*.sh
+          ./scripts/run-with-logging.sh ./scripts/build-lua.sh
 
       - name: Upload executable as artifact
         uses: actions/upload-artifact@v4
@@ -87,24 +35,8 @@ jobs:
       - name: Commit build logs to logs branch
         if: always()
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Create or switch to logs branch
-          git fetch origin logs:logs || git branch logs
-          git checkout logs || git checkout --orphan logs
-
-          # Clear everything except logs
-          git rm -rf . || true
-          git checkout HEAD -- logs/ || true
-
-          # Ensure logs directory exists
-          mkdir -p logs
-
-          # Add logs and commit
-          git add logs/
-          git commit -m "Build logs from run ${{ github.run_number }} - $(date +%Y%m%d-%H%M%S)" || echo "No new logs to commit"
-          git push -u origin logs || echo "Failed to push logs"
+          chmod +x scripts/commit-logs.sh
+          ./scripts/commit-logs.sh || echo "Failed to commit logs"
 
       - name: Commit bin directory
         if: github.event_name == 'push'
