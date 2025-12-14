@@ -32,18 +32,9 @@ jobs:
           path: bin/lua.com
           if-no-files-found: error
 
-      - name: Commit build logs to logs branch
-        if: always()
-        run: |
-          chmod +x scripts/commit-logs.sh
-          ./scripts/commit-logs.sh || echo "Failed to commit logs"
-
       - name: Commit bin directory
         if: github.event_name == 'push'
         run: |
-          # Switch back to original branch
-          git checkout ${{ github.ref_name }}
-
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add bin/
