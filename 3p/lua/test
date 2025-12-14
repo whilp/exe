@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+o/3p/lua/bin/lua 3p/lua/tests/test_unix.lua
+o/3p/lua/bin/lua 3p/lua/tests/test_modules.lua

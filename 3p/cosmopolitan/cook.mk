@@ -8,5 +8,10 @@ o/3p/cosmopolitan/%: o/3p/cosmopolitan o/3p/cosmocc o/3p/cosmos
 	cp $(cosmopolitan_src)/o//$(*) $@
 
 o/3p/cosmopolitan/lua: o/3p/cosmopolitan/third_party/lua/lua
+	cp o/3p/cosmopolitan/third_party/lua/lua o/3p/cosmopolitan/lua
 
 o/3p/cosmopolitan/luac: o/3p/cosmopolitan/third_party/lua/luac
+	cp o/3p/cosmopolitan/third_party/lua/luac o/3p/cosmopolitan/luac
+
+o/3p/cosmopolitan/lunix.a: o/3p/cosmopolitan/third_party/lua/lunix.a
+	cp o/3p/cosmopolitan/third_party/lua/lunix.a o/3p/cosmopolitan/lunix.a

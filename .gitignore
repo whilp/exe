@@ -1,1 +1,5 @@
 /o/
+
+# build artifacts
+3p/*/digest
+3p/*/fetch
