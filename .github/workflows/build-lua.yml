@@ -24,7 +24,7 @@ jobs:
         run: |
           # Download the latest cosmocc release
           wget -q https://cosmo.zip/pub/cosmocc/cosmocc.zip
-          unzip -q cosmocc.zip
+          unzip -qo cosmocc.zip
           # Add cosmocc to PATH
           echo "$PWD/cosmocc/bin" >> $GITHUB_PATH
 
