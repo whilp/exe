@@ -1,16 +1,20 @@
 o = o
 cosmos_bin = $(CURDIR)/$(o)/3p/cosmos/bin
+use_cosmos_bin = $(if $(findstring 3p/cosmos,$(1)),$(2),$(if $(wildcard $(cosmos_bin)/$(2)),$(cosmos_bin)/$(2),$(2)))
+curl = $(call use_cosmos_bin,$@,curl) -fsSL
+sha256sum = $(call use_cosmos_bin,$@,sha256sum)
+unzip = $(call use_cosmos_bin,$*,unzip) -q
 pkg = $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$(dir $@))))$(suffix $(notdir $($(*)_url)))
 
 $(o)/%: %/digest
-	cd $(o)/$* && $(if $(findstring 3p/cosmos,$*),unzip,$(if $(wildcard $(cosmos_bin)/unzip),$(cosmos_bin)/unzip,unzip)) -q -o $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$*)))$(suffix $(notdir $($*_url)))
+	cd $(o)/$* && $(unzip) -o $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$*)))$(suffix $(notdir $($*_url)))
 	touch $@
 
 %/digest: %/fetch
-	cd $(o)/$(dir $<) && echo "$($(*)_sha256)  $(pkg)" | $(if $(findstring 3p/cosmos,$@),sha256sum,$(if $(wildcard $(cosmos_bin)/sha256sum),$(cosmos_bin)/sha256sum,sha256sum)) -c
+	cd $(o)/$(dir $<) && echo "$($(*)_sha256)  $(pkg)" | $(sha256sum) -c
 	touch $@
 
 %/fetch:
 	mkdir -p $(o)/$(dir $@)
-	$(if $(findstring 3p/cosmos,$@),curl,$(if $(wildcard $(cosmos_bin)/curl),$(cosmos_bin)/curl,curl)) -fsSL -o $(o)/$(subst /fetch,/$(pkg),$@) $($(*)_url)
+	$(curl) -o $(o)/$(subst /fetch,/$(pkg),$@) $($(*)_url)
 	touch $@
