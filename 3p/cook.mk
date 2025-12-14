@@ -4,10 +4,12 @@ use_cosmos_bin = $(if $(findstring 3p/cosmos,$(1)),$(2),$(if $(wildcard $(cosmos
 curl = $(call use_cosmos_bin,$@,curl) -fsSL
 sha256sum = $(call use_cosmos_bin,$@,sha256sum)
 unzip = $(call use_cosmos_bin,$*,unzip) -q
-pkg = $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$(dir $@))))$(suffix $(notdir $($(*)_url)))
+tar = $(call use_cosmos_bin,$*,tar)
+get_ext = $(if $(findstring .tar.gz,$(1)),.tar.gz,$(suffix $(1)))
+pkg = $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$(dir $@))))$(call get_ext,$(notdir $($(*)_url)))
 
 $(o)/%: %/digest
-	cd $(o)/$* && $(unzip) -o $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$*)))$(suffix $(notdir $($*_url)))
+	cd $(o)/$* && $(if $(findstring .tar.gz,$(pkg)),$(tar) -xzf,$(unzip) -o) $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$*)))$(call get_ext,$(notdir $($*_url)))
 	touch $@
 
 %/digest: %/fetch
