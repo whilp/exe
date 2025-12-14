@@ -1,5 +1,4 @@
-#!/usr/bin/env lua
--- Discover what modules are available in cosmopolitan's lua
+local lu = require('luaunit')
 
 local function try_require(name)
     local ok, mod = pcall(require, name)
@@ -10,63 +9,74 @@ local function try_require(name)
     end
 end
 
-print("Built-in modules:")
-print()
+TestStandardModules = {}
 
--- Standard lua modules that should always be available
-local standard_modules = {
-    "string",
-    "table",
-    "math",
-    "io",
-    "os",
-    "debug",
-    "package",
-    "coroutine",
-    "utf8",
-}
-
--- Modules that might be in cosmopolitan's lua
-local cosmo_modules = {
-    "unix",
-    "re",      -- redbean regex
-    "path",    -- redbean path utilities
-    "sqlite3", -- sqlite
-    "argon2",  -- password hashing
-    "bsd",     -- bsd functions
-    "json",    -- json encoding
-    "maxmind", -- geoip
-    "net",     -- networking
-    "crypto",  -- cryptography
-    "zlib",    -- compression
-    "http",    -- http utilities
-}
-
-print("Standard Lua modules:")
-for _, name in ipairs(standard_modules) do
-    local ok, typ = try_require(name)
-    local status = ok and "✓" or "✗"
-    print(string.format("  %-20s %s (%s)", name, status, typ or "not available"))
+function TestStandardModules:testString()
+    local ok, typ = try_require('string')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
 end
 
-print()
-print("Potential cosmopolitan/redbean modules:")
-for _, name in ipairs(cosmo_modules) do
-    local ok, typ = try_require(name)
-    local status = ok and "✓" or "✗"
-    print(string.format("  %-20s %s (%s)", name, status, typ or "not available"))
+function TestStandardModules:testTable()
+    local ok, typ = try_require('table')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
 end
 
--- Check what's in package.preload
-print()
-print("Preloaded modules:")
-for name, _ in pairs(package.preload) do
-    print(string.format("  %s", name))
+function TestStandardModules:testMath()
+    local ok, typ = try_require('math')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
 end
 
--- Check package.loaded
-print()
-print("Already loaded modules:")
-for name, _ in pairs(package.loaded) do
-    print(string.format("  %s", name))
+function TestStandardModules:testIo()
+    local ok, typ = try_require('io')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
 end
+
+function TestStandardModules:testOs()
+    local ok, typ = try_require('os')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
+end
+
+function TestStandardModules:testDebug()
+    local ok, typ = try_require('debug')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
+end
+
+function TestStandardModules:testPackage()
+    local ok, typ = try_require('package')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
+end
+
+function TestStandardModules:testCoroutine()
+    local ok, typ = try_require('coroutine')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
+end
+
+function TestStandardModules:testUtf8()
+    local ok, typ = try_require('utf8')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
+end
+
+TestCosmopolitanModules = {}
+
+function TestCosmopolitanModules:testUnix()
+    local ok, typ = try_require('unix')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
+end
+
+function TestCosmopolitanModules:testLuaunit()
+    local ok, typ = try_require('luaunit')
+    lu.assertTrue(ok)
+    lu.assertEquals(typ, 'table')
+end
+
+os.exit(lu.LuaUnit.run())
