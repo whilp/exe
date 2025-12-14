@@ -3,6 +3,8 @@ o/3p/lua/lua: o/3p/cosmopolitan 3p/lua/linit.c.patch 3p/lua/BUILD.mk.patch
 	cd $(cosmopolitan_src)/third_party/lua && patch -p0 -N < $(CURDIR)/3p/lua/linit.c.patch || true
 	cp $(cosmopolitan_src)/tool/net/lre.c $(cosmopolitan_src)/third_party/lua/lre.c
 	cp $(cosmopolitan_src)/tool/net/lpath.c $(cosmopolitan_src)/third_party/lua/lpath.c
+	cp $(cosmopolitan_src)/tool/net/largon2.c $(cosmopolitan_src)/third_party/lua/largon2.c
+	cp $(cosmopolitan_src)/tool/net/lsqlite3.c $(cosmopolitan_src)/third_party/lua/lsqlite3.c
 	cp 3p/lua/BUILD.mk.patch $(cosmopolitan_src)/third_party/lua/BUILD.mk
 	cd $(cosmopolitan_src) && rm -f o//third_party/lua/lua.a.pkg o//third_party/lua/lua.pkg o//third_party/lua/lua
 	cd $(cosmopolitan_src) && $(make) -j8 o//third_party/lua/lua
@@ -22,5 +24,7 @@ o/3p/lua: o/3p/lua/lua o/3p/cosmopolitan/luac o/3p/cosmopolitan/lunix.a o/3p/lua
 	$(lua) 3p/lua/test_modules.lua
 	$(lua) 3p/lua/test_re.lua
 	$(lua) 3p/lua/test_path.lua
+	$(lua) 3p/lua/test_argon2.lua
+	$(lua) 3p/lua/test_sqlite.lua
 
 .PHONY: 3p/lua/test
