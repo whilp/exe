@@ -16,13 +16,6 @@ if ! command -v cosmocc &> /dev/null; then
     echo "cosmocc installed to: $PWD/cosmocc/bin"
 fi
 
-# Download superconfigure if not present
-if [ ! -f superconfigure ]; then
-    echo "=== Downloading superconfigure ==="
-    wget -q https://cosmo.zip/pub/cosmos/superconfigure
-    chmod +x superconfigure
-fi
-
 # Download Lua source if not present
 if [ ! -d lua-5.4.7 ]; then
     echo "=== Downloading Lua 5.4.7 source ==="
@@ -31,12 +24,19 @@ if [ ! -d lua-5.4.7 ]; then
 fi
 
 # Build Lua
-echo "=== Running superconfigure ==="
+echo "=== Building Lua with cosmocc ==="
 cd lua-5.4.7
-../superconfigure
 
-echo "=== Building with cosmocc ==="
-make CC=cosmocc
+# Build using the generic Makefile target with cosmocc
+make -C src all \
+    CC=cosmocc \
+    AR="cosmoar rcu" \
+    RANLIB=cosmoranlib \
+    MYCFLAGS="-static" \
+    MYLDFLAGS="-static" \
+    LUA_A=liblua.a \
+    LUA_T=lua \
+    LUAC_T=luac
 
 echo "=== Build complete ==="
 cd ..
