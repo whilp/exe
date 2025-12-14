@@ -23,19 +23,19 @@ jobs:
       - name: Download and setup cosmocc
         run: |
           # Download the latest cosmocc release
-          wget https://cosmo.zip/pub/cosmocc/cosmocc.zip
-          unzip cosmocc.zip
+          wget -q https://cosmo.zip/pub/cosmocc/cosmocc.zip
+          unzip -q cosmocc.zip
           # Add cosmocc to PATH
           echo "$PWD/cosmocc/bin" >> $GITHUB_PATH
 
       - name: Download superconfigure
         run: |
-          wget https://cosmo.zip/pub/cosmos/superconfigure
+          wget -q https://cosmo.zip/pub/cosmos/superconfigure
           chmod +x superconfigure
 
       - name: Download Lua source
         run: |
-          wget https://www.lua.org/ftp/lua-5.4.7.tar.gz
+          wget -q https://www.lua.org/ftp/lua-5.4.7.tar.gz
           tar xzf lua-5.4.7.tar.gz
 
       - name: Build Lua with cosmopolitan
