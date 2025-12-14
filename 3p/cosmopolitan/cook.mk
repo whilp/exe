@@ -6,3 +6,7 @@ o/3p/cosmopolitan/%: o/3p/cosmopolitan o/3p/cosmocc o/3p/cosmos
 	cd $(cosmopolitan_src) && $(make) -j8 o//$(*)
 	mkdir -p $(dir $@)
 	cp $(cosmopolitan_src)/o//$(*) $@
+
+o/3p/cosmopolitan/lua: o/3p/cosmopolitan/third_party/lua/lua
+
+o/3p/cosmopolitan/luac: o/3p/cosmopolitan/third_party/lua/luac
