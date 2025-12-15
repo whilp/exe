@@ -4,6 +4,7 @@ o := $(CURDIR)/o
 curl := curl -fsSL
 sha256sum := sha256sum
 unzip := unzip -q
+zip := zip -q
 tar := tar
 make := make
 lua := lua
