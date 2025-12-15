@@ -1,23 +1,30 @@
 --- linit.c.orig
 +++ linit.c
-@@ -50,6 +50,10 @@
+@@ -50,6 +50,16 @@
  #include "third_party/lua/lualib.h"
  __static_yoink("lua_notice");
 
++// currently included modules from tool/net/
 +extern int LuaRe(lua_State *L);
 +extern int LuaPath(lua_State *L);
 +extern int luaopen_argon2(lua_State *L);
 +extern int luaopen_lsqlite3(lua_State *L);
++
++// available module to add:
++// extern int luaopen_unix(lua_State *L);      // third_party/lua/lunix.c - unix system calls
 
  /*
  ** these libs are loaded by lua.c and are readily available to any Lua
-@@ -66,6 +70,10 @@
+@@ -66,6 +76,14 @@
    {LUA_UTF8LIBNAME, luaopen_utf8},
    {LUA_DBLIBNAME, luaopen_debug},
++  // currently included modules
 +  {"re", LuaRe},
 +  {"path", LuaPath},
 +  {"argon2", luaopen_argon2},
 +  {"lsqlite3", luaopen_lsqlite3},
++  // available to add:
++  // {"unix", luaopen_unix},
    {NULL, NULL}
  };
 
