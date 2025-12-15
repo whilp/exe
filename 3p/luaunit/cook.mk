@@ -2,7 +2,7 @@ luaunit_url := https://raw.githubusercontent.com/bluebird75/luaunit/LUAUNIT_V3_4
 luaunit_sha256 := bf3e3fb25b77739fa1ebc324582776d26486e32e49c150628bc21b9b9e6ce645
 luaunit_dir := $(3p)/luaunit
 luaunit_file := $(luaunit_dir)/luaunit.lua
-luaunit_zip := $(luaunit_dir)/luaunit.zip
+luaunit_lua_dir := $(luaunit_dir)/.lua
 
 $(luaunit_file): $(luaunit_dir)
 	$(curl) -o $@ $(luaunit_url)
@@ -11,8 +11,8 @@ $(luaunit_file): $(luaunit_dir)
 $(luaunit_dir):
 	mkdir -p $@
 
-$(luaunit_zip): $(luaunit_file)
-	mkdir -p $(luaunit_dir)/.lua
-	cp $(luaunit_file) $(luaunit_dir)/.lua/luaunit.lua
-	cd $(luaunit_dir) && $(zip) -r $(notdir $@) .lua
-	rm -rf $(luaunit_dir)/.lua
+$(luaunit_lua_dir): $(luaunit_file)
+	mkdir -p $@
+	cp $(luaunit_file) $@/luaunit.lua
+
+luaunit_libs := $(luaunit_lua_dir)
