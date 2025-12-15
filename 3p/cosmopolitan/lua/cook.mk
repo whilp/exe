@@ -2,7 +2,7 @@ cosmopolitan_lua := $(cosmopolitan_dir)/lua/lua
 cosmopolitan_lua_libs := $(luaunit_libs)
 cosmopolitan_lua_patch_dir := 3p/cosmopolitan/lua
 cosmopolitan_lua_patched := $(cosmopolitan_dir)/.lua_patched
-cosmopolitan_lua_deps := $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(cosmopolitan_lua_libs) $(cosmopolitan_lua_patched)
+cosmopolitan_lua_deps := $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(cosmopolitan_lua_libs)/luaunit.lua $(cosmopolitan_lua_patched)
 cosmopolitan_lua_tests := 3p/cosmopolitan/lua
 
 $(cosmopolitan_lua_patched): $(cosmopolitan_src)
