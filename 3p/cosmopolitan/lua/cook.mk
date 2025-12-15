@@ -1,8 +1,8 @@
 cosmopolitan_lua := $(cosmopolitan_dir)/lua/lua
-cosmopolitan_lua_libs := $(luaunit_libs)
+cosmopolitan_lua_lib_dir := $(luaunit_libs)
 cosmopolitan_lua_patch_dir := 3p/cosmopolitan/lua
 cosmopolitan_lua_patched := $(cosmopolitan_dir)/.lua_patched
-cosmopolitan_lua_deps := $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(cosmopolitan_lua_libs)/luaunit.lua $(cosmopolitan_lua_patched)
+cosmopolitan_lua_deps := $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(cosmopolitan_lua_lib_dir)/luaunit.lua $(cosmopolitan_lua_patched)
 cosmopolitan_lua_tests := 3p/cosmopolitan/lua
 
 $(cosmopolitan_lua_patched): $(cosmopolitan_src)
@@ -16,7 +16,7 @@ $(cosmopolitan_lua): $(cosmopolitan_lua_deps)
 	cd $(dir $(cosmopolitan_src)) && $(make) -j8 o//third_party/lua/lua
 	mkdir -p $(dir $@)
 	cp $(dir $(cosmopolitan_src))/o//third_party/lua/lua $@
-	$(foreach lib,$(cosmopolitan_lua_libs),cd $(lib)/.. && $(zip) -qr $@ $(notdir $(lib));)
+	cd $(cosmopolitan_lua_lib_dir)/.. && $(zip) -qr $@ $(notdir $(cosmopolitan_lua_lib_dir))
 
 .PHONY: test-cosmopolitan-lua
 test-cosmopolitan-lua: $(cosmopolitan_lua)
