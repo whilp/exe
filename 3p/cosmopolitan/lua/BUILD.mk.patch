@@ -1,5 +1,5 @@
---- third_party/lua/BUILD.mk.orig	2025-01-05 22:05:49.000000000 +0000
-+++ third_party/lua/BUILD.mk	2025-12-15 00:16:08.477374726 +0000
+--- BUILD.mk.orig	2025-01-05 22:05:49.000000000 +0000
++++ BUILD.mk	2025-12-15 00:16:08.477374726 +0000
 @@ -83,6 +83,10 @@
  	third_party/lua/liolib.c				\
  	third_party/lua/llex.c					\
