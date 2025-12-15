@@ -15,8 +15,18 @@ $(cosmopolitan_dir):
 	mkdir -p $@
 
 cosmopolitan_lua := $(cosmopolitan_dir)/lua
+cosmopolitan_lua_libs := $(luaunit_file)
+cosmopolitan_lua_libs_zip := $(cosmopolitan_dir)/lua_libs.zip
+cosmopolitan_lua_staging := $(cosmopolitan_dir)/.lua
 
-$(cosmopolitan_lua): $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin)
+$(cosmopolitan_lua_libs_zip): $(cosmopolitan_lua_libs)
+	mkdir -p $(cosmopolitan_lua_staging)
+	$(foreach lib,$(cosmopolitan_lua_libs),cp $(lib) $(cosmopolitan_lua_staging)/$(notdir $(lib));)
+	cd $(cosmopolitan_dir) && $(zip) -r $(notdir $@) .lua
+	rm -rf $(cosmopolitan_lua_staging)
+
+$(cosmopolitan_lua): $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(cosmopolitan_lua_libs_zip)
 	cd $(cosmopolitan_src) && $(make) -j8 o//third_party/lua/lua
 	mkdir -p $(dir $@)
 	cp $(cosmopolitan_src)/o//third_party/lua/lua $@
+	cd $(cosmopolitan_dir) && $(zip) -rm $(cosmopolitan_lua) $(notdir $(cosmopolitan_lua_libs_zip))
