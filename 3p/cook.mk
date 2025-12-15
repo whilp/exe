@@ -3,9 +3,9 @@ o := $(CURDIR)/o
 
 curl := curl -fsSL
 sha256sum := sha256sum
-unzip := unzip -q
+unzip := unzip -q -DD
 zip := zip -q
-tar := tar
+tar := tar -m
 lua := lua
 
 include 3p/cosmocc/cook.mk
@@ -15,10 +15,10 @@ include 3p/cosmos/cook.mk
 #cosmocc_dir := $(o)/3p/cosmocc
 #lua_bin := $(CURDIR)/$(o)/3p/lua/bin
 
-export PATH := $(cosmos_bin):$(cosmocc_bin):$(PATH)
-export CC := $(cosmocc_bin)/cosmocc
-export AR := $(cosmocc_bin)/cosmocc-ar
-export RANLIB := $(cosmocc_bin)/cosmocc-ranlib
+export PATH := $(dir $(cosmos_bin)):$(dir $(cosmocc_bin)):$(PATH)
+export CC := $(cosmocc_bin)
+export AR := $(dir $(cosmocc_bin))cosmocc-ar
+export RANLIB := $(dir $(cosmocc_bin))cosmocc-ranlib
 
 make := make COSMOCC=$(cosmocc_dir)
 

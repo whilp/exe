@@ -4,15 +4,15 @@ luaunit_dir := $(3p)/luaunit
 luaunit_file := $(luaunit_dir)/luaunit.lua
 luaunit_lua_dir := $(luaunit_dir)/.lua
 
-$(luaunit_file): $(luaunit_dir)
+$(luaunit_file): | $(luaunit_dir)
 	$(curl) -o $@ $(luaunit_url)
 	cd $(dir $@) && echo "$(luaunit_sha256)  $(notdir $@)" | $(sha256sum) -c
 
 $(luaunit_dir):
 	mkdir -p $@
 
-$(luaunit_lua_dir): $(luaunit_file)
-	mkdir -p $@
-	cp $(luaunit_file) $@/luaunit.lua
+$(luaunit_lua_dir)/luaunit.lua: $(luaunit_file)
+	mkdir -p $(dir $@)
+	cp $(luaunit_file) $@
 
 luaunit_libs := $(luaunit_lua_dir)
