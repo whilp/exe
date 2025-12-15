@@ -6,7 +6,6 @@ sha256sum := sha256sum
 unzip := unzip -q
 zip := zip -q
 tar := tar
-make := make
 lua := lua
 
 include 3p/cosmocc/cook.mk
@@ -20,6 +19,8 @@ export PATH := $(cosmos_bin):$(cosmocc_bin):$(PATH)
 export CC := $(cosmocc_bin)/cosmocc
 export AR := $(cosmocc_bin)/cosmocc-ar
 export RANLIB := $(cosmocc_bin)/cosmocc-ranlib
+
+make := make COSMOCC=$(cosmocc_dir)
 
 #get_ext = $(if $(findstring .tar.gz,$(1)),.tar.gz,$(suffix $(1)))
 
