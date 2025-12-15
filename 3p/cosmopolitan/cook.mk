@@ -14,9 +14,10 @@ $(cosmopolitan_tarball): $(cosmopolitan_dir)
 $(cosmopolitan_dir):
 	mkdir -p $@
 
+cosmopolitan_lua := $(cosmopolitan_dir)/lua
 cosmopolitan_lua_libs := $(luaunit_zip)
 
-o/3p/cosmopolitan/lua: $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(cosmopolitan_lua_libs)
+$(cosmopolitan_lua): $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(cosmopolitan_lua_libs)
 	cd $(cosmopolitan_src) && $(make) -j8 o//third_party/lua/lua
 	mkdir -p $(dir $@)
 	cp $(cosmopolitan_src)/o//third_party/lua/lua $@
