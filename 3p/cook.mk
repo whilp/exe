@@ -16,7 +16,9 @@ include 3p/cosmos/cook.mk
 #lua_bin := $(CURDIR)/$(o)/3p/lua/bin
 
 export PATH := $(cosmos_bin):$(cosmocc_bin):$(PATH)
-#export COSMOCC := $(cosmocc_bin)
+export CC := $(cosmocc_bin)/cosmocc
+export AR := $(cosmocc_bin)/cosmocc-ar
+export RANLIB := $(cosmocc_bin)/cosmocc-ranlib
 
 #get_ext = $(if $(findstring .tar.gz,$(1)),.tar.gz,$(suffix $(1)))
 
