@@ -5,10 +5,10 @@ cosmos_zip := $(cosmos_dir)/cosmos.zip
 cosmos_bin := $(cosmos_dir)/bin
 
 $(cosmos_bin): $(cosmos_zip)
-	$(unzip) -q -o $< -d $(cosmos_dir)
+	$(unzip) -o $< -d $(cosmos_dir)
 
 $(cosmos_zip): $(cosmos_dir)
-	$(curl) -fsSL -o $@ $(cosmos_url)
+	$(curl) -o $@ $(cosmos_url)
 	cd $(dir $@) && echo "$(cosmos_sha256)  $(notdir $@)" | $(sha256sum) -c
 
 $(cosmos_dir):

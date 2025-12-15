@@ -5,10 +5,10 @@ cosmocc_zip := $(cosmocc_dir)/cosmocc.zip
 cosmocc_bin := $(cosmocc_dir)/bin
 
 $(cosmocc_bin): $(cosmocc_zip)
-	$(unzip) -q -o $< -d $(cosmocc_dir)
+	$(unzip) -o $< -d $(cosmocc_dir)
 
 $(cosmocc_zip): $(cosmocc_dir)
-	$(curl) -fsSL -o $@ $(cosmocc_url)
+	$(curl) -o $@ $(cosmocc_url)
 	cd $(dir $@) && echo "$(cosmocc_sha256)  $(notdir $@)" | $(sha256sum) -c
 
 $(cosmocc_dir):
