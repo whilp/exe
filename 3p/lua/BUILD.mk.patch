@@ -160,7 +160,8 @@ $(THIRD_PARTY_LUA_A):						\
 
 $(THIRD_PARTY_LUA_A).pkg:					\
 		$(THIRD_PARTY_LUA_A_OBJS)			\
-		$(foreach x,$(THIRD_PARTY_LUA_A_DIRECTDEPS),$($(x)_A).pkg)
+		o/$(MODE)/third_party/argon2/argon2.a.pkg	\
+		o/$(MODE)/third_party/sqlite3/sqlite3.a.pkg
 
 o/$(MODE)/third_party/lua/lmathlib.o				\
 o//third_party/lua/lgc.o: private				\
