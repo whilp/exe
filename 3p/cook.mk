@@ -14,18 +14,17 @@ make := make
 lua := lua
 
 get_ext = $(if $(findstring .tar.gz,$(1)),.tar.gz,$(suffix $(1)))
-pkg = $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$(dir $@))))$(call get_ext,$(notdir $($(*)_url)))
 
-$(o)/%: %/digest
-	mkdir -p $(o)/$*
-	cd $(o)/$* && $(if $(findstring .tar.gz,$(pkg)),$(tar) -xzf,$(unzip) -q -o) $(subst /,.,$(patsubst %/,%,$(subst 3p/,,$*)))$(call get_ext,$(notdir $($*_url)))
+$(o)/3p/%: $(o)/3p/.%/digest
+	mkdir -p $(o)/3p/$*
+	cd $(o)/3p/$* && $(if $(findstring .tar.gz,$(notdir $(3p/$*_url))),$(tar) -xzf,$(unzip) -q -o) ../.$*/$(notdir $(3p/$*_url))
 	touch $@
 
-%/digest: %/fetch
-	cd $(o)/$(dir $<) && echo "$($(*)_sha256)  $(pkg)" | $(sha256sum) -c
+$(o)/3p/.%/digest: $(o)/3p/.%/fetch
+	cd $(o)/3p/.$* && echo "$(3p/$*_sha256)  $(notdir $(3p/$*_url))" | $(sha256sum) -c
 	touch $@
 
-%/fetch:
-	mkdir -p $(o)/$(dir $@)
-	$(curl) -fsSL -o $(o)/$(subst /fetch,/$(pkg),$@) $($(*)_url)
+$(o)/3p/.%/fetch:
+	mkdir -p $(o)/3p/.$*
+	$(curl) -fsSL -o $(o)/3p/.$*/$(notdir $(3p/$*_url)) $(3p/$*_url)
 	touch $@
