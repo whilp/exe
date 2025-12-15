@@ -3,7 +3,6 @@ function test_unix_module_exists()
 end
 
 function test_path_module_exists()
-    lu.skipIf(true, "path module is redbean-specific")
     lu.assertNotNil(path, "path module should be compiled into lua")
 end
 
