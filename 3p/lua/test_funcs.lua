@@ -1,234 +1,328 @@
-function test_EncodeBase64_exists()
-    lu.skipIf(true, "EncodeBase64 is redbean-specific")
-    lu.assertNotNil(EncodeBase64, "EncodeBase64 should be available")
+-- test cosmo module functions
+-- functions excluded by LFUNCS_LITE or not in lfuncs.c use lu.skipIf
+
+local cosmo = require('cosmo')
+
+-- helper to check if function is missing
+local function missing(fn)
+    return cosmo[fn] == nil
 end
 
-function test_DecodeBase64_exists()
-    lu.skipIf(true, "DecodeBase64 is redbean-specific")
-    lu.assertNotNil(DecodeBase64, "DecodeBase64 should be available")
+function test_cosmo_module_exists()
+    lu.assertNotNil(cosmo, "cosmo module should be compiled into lua")
 end
 
-function test_EncodeBase32_exists()
-    lu.skipIf(true, "EncodeBase32 is redbean-specific")
-    lu.assertNotNil(EncodeBase32, "EncodeBase32 should be available")
+-- encoding functions
+function test_cosmo_EncodeBase64()
+    lu.assertNotNil(cosmo.EncodeBase64)
+    lu.assertEquals(cosmo.EncodeBase64("hello"), "aGVsbG8=")
 end
 
-function test_DecodeBase32_exists()
-    lu.skipIf(true, "DecodeBase32 is redbean-specific")
-    lu.assertNotNil(DecodeBase32, "DecodeBase32 should be available")
+function test_cosmo_DecodeBase64()
+    lu.assertNotNil(cosmo.DecodeBase64)
+    lu.assertEquals(cosmo.DecodeBase64("aGVsbG8="), "hello")
 end
 
-function test_EncodeHex_exists()
-    lu.skipIf(true, "EncodeHex is redbean-specific")
-    lu.assertNotNil(EncodeHex, "EncodeHex should be available")
+function test_cosmo_EncodeBase32()
+    lu.assertNotNil(cosmo.EncodeBase32)
 end
 
-function test_DecodeHex_exists()
-    lu.skipIf(true, "DecodeHex is redbean-specific")
-    lu.assertNotNil(DecodeHex, "DecodeHex should be available")
+function test_cosmo_DecodeBase32()
+    lu.assertNotNil(cosmo.DecodeBase32)
 end
 
-function test_EncodeLatin1_exists()
-    lu.skipIf(true, "EncodeLatin1 is redbean-specific")
-    lu.assertNotNil(EncodeLatin1, "EncodeLatin1 should be available")
+function test_cosmo_EncodeHex()
+    lu.assertNotNil(cosmo.EncodeHex)
+    lu.assertEquals(cosmo.EncodeHex("AB"), "4142")
 end
 
-function test_DecodeLatin1_exists()
-    lu.skipIf(true, "DecodeLatin1 is redbean-specific")
-    lu.assertNotNil(DecodeLatin1, "DecodeLatin1 should be available")
+function test_cosmo_DecodeHex()
+    lu.assertNotNil(cosmo.DecodeHex)
+    lu.assertEquals(cosmo.DecodeHex("4142"), "AB")
 end
 
-function test_EncodeJson_exists()
-    lu.skipIf(true, "EncodeJson is redbean-specific")
-    lu.assertNotNil(EncodeJson, "EncodeJson should be available")
+function test_cosmo_EncodeLatin1()
+    lu.assertNotNil(cosmo.EncodeLatin1)
 end
 
-function test_DecodeJson_exists()
-    lu.skipIf(true, "DecodeJson is redbean-specific")
-    lu.assertNotNil(DecodeJson, "DecodeJson should be available")
+function test_cosmo_DecodeLatin1()
+    lu.assertNotNil(cosmo.DecodeLatin1)
 end
 
-function test_EncodeLua_exists()
-    lu.skipIf(true, "EncodeLua is redbean-specific")
-    lu.assertNotNil(EncodeLua, "EncodeLua should be available")
+-- escape functions
+function test_cosmo_EscapeHtml()
+    lu.assertNotNil(cosmo.EscapeHtml)
+    lu.assertEquals(cosmo.EscapeHtml("<script>"), "&lt;script&gt;")
 end
 
-function test_EscapeHtml_exists()
-    lu.skipIf(true, "EscapeHtml is redbean-specific")
-    lu.assertNotNil(EscapeHtml, "EscapeHtml should be available")
+function test_cosmo_EscapePath()
+    lu.assertNotNil(cosmo.EscapePath)
 end
 
-function test_EscapePath_exists()
-    lu.skipIf(true, "EscapePath is redbean-specific")
-    lu.assertNotNil(EscapePath, "EscapePath should be available")
+function test_cosmo_EscapeSegment()
+    lu.assertNotNil(cosmo.EscapeSegment)
 end
 
-function test_EscapeSegment_exists()
-    lu.skipIf(true, "EscapeSegment is redbean-specific")
-    lu.assertNotNil(EscapeSegment, "EscapeSegment should be available")
+function test_cosmo_EscapeParam()
+    lu.assertNotNil(cosmo.EscapeParam)
 end
 
-function test_EscapeParam_exists()
-    lu.skipIf(true, "EscapeParam is redbean-specific")
-    lu.assertNotNil(EscapeParam, "EscapeParam should be available")
+function test_cosmo_EscapeLiteral()
+    lu.assertNotNil(cosmo.EscapeLiteral)
 end
 
-function test_EscapeLiteral_exists()
-    lu.skipIf(true, "EscapeLiteral is redbean-specific")
-    lu.assertNotNil(EscapeLiteral, "EscapeLiteral should be available")
+function test_cosmo_EscapeFragment()
+    lu.assertNotNil(cosmo.EscapeFragment)
 end
 
-function test_EscapeFragment_exists()
-    lu.skipIf(true, "EscapeFragment is redbean-specific")
-    lu.assertNotNil(EscapeFragment, "EscapeFragment should be available")
+function test_cosmo_EscapeUser()
+    lu.assertNotNil(cosmo.EscapeUser)
 end
 
-function test_EscapeUser_exists()
-    lu.skipIf(true, "EscapeUser is redbean-specific")
-    lu.assertNotNil(EscapeUser, "EscapeUser should be available")
+function test_cosmo_EscapePass()
+    lu.assertNotNil(cosmo.EscapePass)
 end
 
-function test_EscapePass_exists()
-    lu.skipIf(true, "EscapePass is redbean-specific")
-    lu.assertNotNil(EscapePass, "EscapePass should be available")
+function test_cosmo_EscapeHost()
+    lu.assertNotNil(cosmo.EscapeHost)
 end
 
-function test_EscapeHost_exists()
-    lu.skipIf(true, "EscapeHost is redbean-specific")
-    lu.assertNotNil(EscapeHost, "EscapeHost should be available")
+-- hash functions (LFUNCS_LITE: excluded - need mbedtls)
+function test_cosmo_Md5()
+    lu.skipIf(missing("Md5"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Md5)
 end
 
-function test_Md5_exists()
-    lu.skipIf(true, "Md5 is redbean-specific")
-    lu.assertNotNil(Md5, "Md5 should be available")
+function test_cosmo_Sha1()
+    lu.skipIf(missing("Sha1"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Sha1)
 end
 
-function test_Sha1_exists()
-    lu.skipIf(true, "Sha1 is redbean-specific")
-    lu.assertNotNil(Sha1, "Sha1 should be available")
+function test_cosmo_Sha224()
+    lu.skipIf(missing("Sha224"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Sha224)
 end
 
-function test_Sha224_exists()
-    lu.skipIf(true, "Sha224 is redbean-specific")
-    lu.assertNotNil(Sha224, "Sha224 should be available")
+function test_cosmo_Sha256()
+    lu.skipIf(missing("Sha256"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Sha256)
 end
 
-function test_Sha256_exists()
-    lu.skipIf(true, "Sha256 is redbean-specific")
-    lu.assertNotNil(Sha256, "Sha256 should be available")
+function test_cosmo_Sha384()
+    lu.skipIf(missing("Sha384"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Sha384)
 end
 
-function test_Sha384_exists()
-    lu.skipIf(true, "Sha384 is redbean-specific")
-    lu.assertNotNil(Sha384, "Sha384 should be available")
+function test_cosmo_Sha512()
+    lu.skipIf(missing("Sha512"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Sha512)
 end
 
-function test_Sha512_exists()
-    lu.skipIf(true, "Sha512 is redbean-specific")
-    lu.assertNotNil(Sha512, "Sha512 should be available")
+function test_cosmo_GetCryptoHash()
+    lu.skipIf(missing("GetCryptoHash"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.GetCryptoHash)
 end
 
-function test_GetCryptoHash_exists()
-    lu.skipIf(true, "GetCryptoHash is redbean-specific")
-    lu.assertNotNil(GetCryptoHash, "GetCryptoHash should be available")
+function test_cosmo_Crc32()
+    lu.assertNotNil(cosmo.Crc32)
 end
 
-function test_Crc32_exists()
-    lu.skipIf(true, "Crc32 is redbean-specific")
-    lu.assertNotNil(Crc32, "Crc32 should be available")
+function test_cosmo_Crc32c()
+    lu.assertNotNil(cosmo.Crc32c)
 end
 
-function test_Crc32c_exists()
-    lu.skipIf(true, "Crc32c is redbean-specific")
-    lu.assertNotNil(Crc32c, "Crc32c should be available")
+-- compression functions
+function test_cosmo_Deflate()
+    lu.assertNotNil(cosmo.Deflate)
 end
 
-function test_Deflate_exists()
-    lu.skipIf(true, "Deflate is redbean-specific")
-    lu.assertNotNil(Deflate, "Deflate should be available")
+function test_cosmo_Inflate()
+    lu.assertNotNil(cosmo.Inflate)
 end
 
-function test_Inflate_exists()
-    lu.skipIf(true, "Inflate is redbean-specific")
-    lu.assertNotNil(Inflate, "Inflate should be available")
+function test_cosmo_Compress()
+    lu.assertNotNil(cosmo.Compress)
 end
 
-function test_Decimate_exists()
-    lu.skipIf(true, "Decimate is redbean-specific")
-    lu.assertNotNil(Decimate, "Decimate should be available")
+function test_cosmo_Uncompress()
+    lu.assertNotNil(cosmo.Uncompress)
 end
 
-function test_ParseUrl_exists()
-    lu.skipIf(true, "ParseUrl is redbean-specific")
-    lu.assertNotNil(ParseUrl, "ParseUrl should be available")
+-- IP functions
+function test_cosmo_ParseIp()
+    lu.assertNotNil(cosmo.ParseIp)
 end
 
-function test_EncodeUrl_exists()
-    lu.skipIf(true, "EncodeUrl is redbean-specific")
-    lu.assertNotNil(EncodeUrl, "EncodeUrl should be available")
+function test_cosmo_FormatIp()
+    lu.assertNotNil(cosmo.FormatIp)
 end
 
-function test_ParseIp_exists()
-    lu.skipIf(true, "ParseIp is redbean-specific")
-    lu.assertNotNil(ParseIp, "ParseIp should be available")
+function test_cosmo_ResolveIp()
+    lu.skipIf(missing("ResolveIp"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.ResolveIp)
 end
 
-function test_FormatIp_exists()
-    lu.skipIf(true, "FormatIp is redbean-specific")
-    lu.assertNotNil(FormatIp, "FormatIp should be available")
+function test_cosmo_CategorizeIp()
+    lu.assertNotNil(cosmo.CategorizeIp)
 end
 
-function test_ResolveIp_exists()
-    lu.skipIf(true, "ResolveIp is redbean-specific")
-    lu.assertNotNil(ResolveIp, "ResolveIp should be available")
+function test_cosmo_IsLoopbackIp()
+    lu.assertNotNil(cosmo.IsLoopbackIp)
 end
 
-function test_Curve25519_exists()
-    lu.skipIf(true, "Curve25519 is redbean-specific")
-    lu.assertNotNil(Curve25519, "Curve25519 should be available")
+function test_cosmo_IsPrivateIp()
+    lu.assertNotNil(cosmo.IsPrivateIp)
 end
 
-function test_GetRandomBytes_exists()
-    lu.skipIf(true, "GetRandomBytes is redbean-specific")
-    lu.assertNotNil(GetRandomBytes, "GetRandomBytes should be available")
+function test_cosmo_IsPublicIp()
+    lu.assertNotNil(cosmo.IsPublicIp)
 end
 
-function test_Bingbong_exists()
-    lu.skipIf(true, "Bingbong is redbean-specific")
-    lu.assertNotNil(Bingbong, "Bingbong should be available")
+-- crypto functions (LFUNCS_LITE: Curve25519 excluded - needs mbedtls/everest)
+function test_cosmo_Curve25519()
+    lu.skipIf(missing("Curve25519"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Curve25519)
 end
 
-function test_UuidV4_exists()
-    lu.skipIf(true, "UuidV4 is redbean-specific")
-    lu.assertNotNil(UuidV4, "UuidV4 should be available")
+function test_cosmo_GetRandomBytes()
+    lu.assertNotNil(cosmo.GetRandomBytes)
+    local bytes = cosmo.GetRandomBytes(16)
+    lu.assertEquals(#bytes, 16)
 end
 
-function test_UuidV7_exists()
-    lu.skipIf(true, "UuidV7 is redbean-specific")
-    lu.assertNotNil(UuidV7, "UuidV7 should be available")
+-- uuid functions (not in lfuncs.c)
+function test_cosmo_UuidV4()
+    lu.skipIf(missing("UuidV4"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.UuidV4)
+    local uuid = cosmo.UuidV4()
+    lu.assertEquals(#uuid, 36)
 end
 
-function test_FormatHttpDateTime_exists()
-    lu.skipIf(true, "FormatHttpDateTime is redbean-specific")
-    lu.assertNotNil(FormatHttpDateTime, "FormatHttpDateTime should be available")
+function test_cosmo_UuidV7()
+    lu.skipIf(missing("UuidV7"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.UuidV7)
+    local uuid = cosmo.UuidV7()
+    lu.assertEquals(#uuid, 36)
 end
 
-function test_ParseHttpDateTime_exists()
-    lu.skipIf(true, "ParseHttpDateTime is redbean-specific")
-    lu.assertNotNil(ParseHttpDateTime, "ParseHttpDateTime should be available")
+-- date/time functions (LFUNCS_LITE: FormatHttpDateTime excluded)
+function test_cosmo_FormatHttpDateTime()
+    lu.skipIf(missing("FormatHttpDateTime"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.FormatHttpDateTime)
 end
 
-function test_Fetch_exists()
-    lu.skipIf(true, "Fetch is redbean-specific")
-    lu.assertNotNil(Fetch, "Fetch should be available")
+function test_cosmo_ParseHttpDateTime()
+    lu.assertNotNil(cosmo.ParseHttpDateTime)
 end
 
-function test_MeasureEntropy_exists()
-    lu.skipIf(true, "MeasureEntropy is redbean-specific")
-    lu.assertNotNil(MeasureEntropy, "MeasureEntropy should be available")
+function test_cosmo_GetTime()
+    lu.assertNotNil(cosmo.GetTime)
 end
 
-function test_VisualizeControlCodes_exists()
-    lu.skipIf(true, "VisualizeControlCodes is redbean-specific")
-    lu.assertNotNil(VisualizeControlCodes, "VisualizeControlCodes should be available")
+-- system info functions
+function test_cosmo_GetHostOs()
+    lu.assertNotNil(cosmo.GetHostOs)
+    local os = cosmo.GetHostOs()
+    lu.assertNotNil(os)
+end
+
+function test_cosmo_GetHostIsa()
+    lu.assertNotNil(cosmo.GetHostIsa)
+    local isa = cosmo.GetHostIsa()
+    lu.assertNotNil(isa)
+end
+
+function test_cosmo_GetCpuCount()
+    lu.assertNotNil(cosmo.GetCpuCount)
+    local count = cosmo.GetCpuCount()
+    lu.assertTrue(count >= 1)
+end
+
+function test_cosmo_GetCpuCore()
+    lu.assertNotNil(cosmo.GetCpuCore)
+end
+
+function test_cosmo_GetCpuNode()
+    lu.assertNotNil(cosmo.GetCpuNode)
+end
+
+-- misc functions
+function test_cosmo_MeasureEntropy()
+    lu.assertNotNil(cosmo.MeasureEntropy)
+end
+
+function test_cosmo_VisualizeControlCodes()
+    lu.assertNotNil(cosmo.VisualizeControlCodes)
+end
+
+function test_cosmo_HasControlCodes()
+    lu.assertNotNil(cosmo.HasControlCodes)
+end
+
+function test_cosmo_GetMonospaceWidth()
+    lu.assertNotNil(cosmo.GetMonospaceWidth)
+end
+
+function test_cosmo_IndentLines()
+    lu.assertNotNil(cosmo.IndentLines)
+end
+
+-- LFUNCS_LITE: Decimate excluded - needs dsp/scale
+function test_cosmo_Decimate()
+    lu.skipIf(missing("Decimate"), "excluded by LFUNCS_LITE")
+    lu.assertNotNil(cosmo.Decimate)
+end
+
+-- not in lfuncs.c
+function test_cosmo_Slurp()
+    lu.skipIf(missing("Slurp"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.Slurp)
+end
+
+function test_cosmo_Barf()
+    lu.skipIf(missing("Barf"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.Barf)
+end
+
+function test_cosmo_Sleep()
+    lu.assertNotNil(cosmo.Sleep)
+end
+
+-- bit manipulation
+function test_cosmo_Popcnt()
+    lu.assertNotNil(cosmo.Popcnt)
+end
+
+function test_cosmo_Bsf()
+    lu.assertNotNil(cosmo.Bsf)
+end
+
+function test_cosmo_Bsr()
+    lu.assertNotNil(cosmo.Bsr)
+end
+
+-- random number generators
+function test_cosmo_Rand64()
+    lu.skipIf(missing("Rand64"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.Rand64)
+end
+
+function test_cosmo_Lemur64()
+    lu.assertNotNil(cosmo.Lemur64)
+end
+
+-- low-level formatting (not in lfuncs.c)
+function test_cosmo_bin()
+    lu.skipIf(missing("bin"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.bin)
+end
+
+function test_cosmo_hex()
+    lu.skipIf(missing("hex"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.hex)
+end
+
+function test_cosmo_oct()
+    lu.skipIf(missing("oct"), "not in lfuncs.c")
+    lu.assertNotNil(cosmo.oct)
 end

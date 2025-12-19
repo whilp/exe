@@ -58,7 +58,10 @@ lua_core_srcs := \
 
 # lua extension sources - some in third_party/lua, some in tool/net
 lua_ext_lua_srcs := lunix.c lua.main.c
-lua_ext_net_srcs := lpath.c lre.c lsqlite3.c largon2.c
+lua_ext_net_srcs := lpath.c lre.c lsqlite3.c largon2.c lfuncs.c
+
+# cosmo module (lfuncs_register.c registers lfuncs as cosmo module)
+lua_cosmo_srcs := lfuncs_register.c
 
 # linenoise source
 lua_linenoise_srcs := linenoise.c
@@ -95,8 +98,9 @@ lua_linenoise_objs := $(addprefix $(lua_build_dir)/linenoise/,$(lua_linenoise_sr
 lua_argon2_objs := $(addprefix $(lua_build_dir)/argon2/,$(lua_argon2_srcs:.c=.o))
 lua_regex_objs := $(addprefix $(lua_build_dir)/regex/,$(lua_regex_srcs:.c=.o))
 lua_sqlite3_objs := $(addprefix $(lua_build_dir)/sqlite3/,$(lua_sqlite3_srcs:.c=.o))
+lua_cosmo_objs := $(addprefix $(lua_build_dir)/cosmo/,$(lua_cosmo_srcs:.c=.o))
 
-lua_all_objs := $(lua_core_objs) $(lua_ext_lua_objs) $(lua_ext_net_objs) $(lua_linenoise_objs) $(lua_argon2_objs) $(lua_regex_objs) $(lua_sqlite3_objs)
+lua_all_objs := $(lua_core_objs) $(lua_ext_lua_objs) $(lua_ext_net_objs) $(lua_linenoise_objs) $(lua_argon2_objs) $(lua_regex_objs) $(lua_sqlite3_objs) $(lua_cosmo_objs)
 
 # output
 lua_bin := results/bin/lua
@@ -107,13 +111,16 @@ lua:
 	$(MAKE) $(lua_patched)
 	$(MAKE) $(lua_bin)
 
-# patch lua.main.c and copy headers to register redbean modules
+# patch lua.main.c, lfuncs.c, and copy headers to register redbean modules
 $(lua_patched): $(cosmopolitan_src) | $(lua_build_dir)
 	cp $(lua_patch_dir)/lpath.h $(lua_cosmo_dir)/third_party/lua/
 	cp $(lua_patch_dir)/lre.h $(lua_cosmo_dir)/third_party/lua/
 	cp $(lua_patch_dir)/lsqlite3.h $(lua_cosmo_dir)/third_party/lua/
 	cp $(lua_patch_dir)/largon2.h $(lua_cosmo_dir)/third_party/lua/
+	cp $(lua_patch_dir)/lcosmo.h $(lua_cosmo_dir)/third_party/lua/
+	cp $(lua_patch_dir)/lfuncs_register.c $(lua_cosmo_dir)/third_party/lua/
 	cd $(lua_cosmo_dir) && patch -p1 < $(CURDIR)/3p/cosmopolitan/lua/lua.main.c.patch
+	cd $(lua_cosmo_dir) && patch -p1 < $(CURDIR)/3p/cosmopolitan/lua/lfuncs.c.patch
 	touch $@
 
 # cosmos zip is needed for APE binaries (system zip doesn't work with APE format)
@@ -127,9 +134,13 @@ $(lua_bin): $(lua_all_objs) | results/bin
 $(lua_build_dir)/lua/%.o: $(lua_cosmo_dir)/third_party/lua/%.c | $(lua_build_dir)/lua
 	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
 
-# lua extension objects from tool/net
+# lua extension objects from tool/net (generic rule)
 $(lua_build_dir)/net/%.o: $(lua_cosmo_dir)/tool/net/%.c | $(lua_build_dir)/net
 	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
+
+# lfuncs.c needs LFUNCS_LITE to exclude functions with heavy dependencies
+$(lua_build_dir)/net/lfuncs.o: $(lua_cosmo_dir)/tool/net/lfuncs.c | $(lua_build_dir)/net
+	$(cosmocc_bin) $(lua_cflags) -DLFUNCS_LITE -c $< -o $@
 
 # linenoise objects
 $(lua_build_dir)/linenoise/%.o: $(lua_cosmo_dir)/third_party/linenoise/%.c | $(lua_build_dir)/linenoise
@@ -147,8 +158,12 @@ $(lua_build_dir)/regex/%.o: $(lua_cosmo_dir)/third_party/regex/%.c | $(lua_build
 $(lua_build_dir)/sqlite3/%.o: $(lua_cosmo_dir)/third_party/sqlite3/%.c | $(lua_build_dir)/sqlite3
 	$(cosmocc_bin) $(lua_cflags) $(lua_sqlite_flags) -c $< -o $@
 
+# cosmo module objects (lfuncs_register.c is copied to third_party/lua)
+$(lua_build_dir)/cosmo/%.o: $(lua_cosmo_dir)/third_party/lua/%.c | $(lua_build_dir)/cosmo
+	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
+
 # directory creation
-$(lua_build_dir) $(lua_build_dir)/lua $(lua_build_dir)/net $(lua_build_dir)/linenoise $(lua_build_dir)/argon2 $(lua_build_dir)/regex $(lua_build_dir)/sqlite3:
+$(lua_build_dir) $(lua_build_dir)/lua $(lua_build_dir)/net $(lua_build_dir)/linenoise $(lua_build_dir)/argon2 $(lua_build_dir)/regex $(lua_build_dir)/sqlite3 $(lua_build_dir)/cosmo:
 	mkdir -p $@
 
 results/bin:
