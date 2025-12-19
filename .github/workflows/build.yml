@@ -20,6 +20,12 @@ jobs:
           sudo chmod +x /usr/bin/ape
           sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register" || true
 
+      - name: Cache tools
+        uses: actions/cache@v4
+        with:
+          path: o/3p
+          key: tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('3p/**/cook.mk') }}
+
       - name: Build
         run: make build -j$(nproc)
 
@@ -45,11 +51,14 @@ jobs:
           name: results
           path: results/
 
-      - name: Make binaries executable
-        run: chmod +x results/bin/*
+      - name: Cache tools
+        uses: actions/cache@v4
+        with:
+          path: o/3p
+          key: tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('3p/**/cook.mk') }}
 
       - name: Run tests
-        run: results/bin/lua 3p/lua/test.lua
+        run: make test
 
   release:
     if: github.ref == 'refs/heads/main'
