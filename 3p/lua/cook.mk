@@ -99,9 +99,8 @@ lua_bin := results/bin/lua
 
 lua: $(lua_bin)
 
-# dependencies on cosmopolitan source and cosmocc toolchain
-$(lua_bin): $(cosmopolitan_src) $(cosmocc_bin)
-$(lua_all_objs): $(cosmopolitan_src) $(cosmocc_bin)
+# dependencies: all object files depend on cosmopolitan source being extracted
+$(lua_all_objs): | $(cosmopolitan_src) $(cosmocc_bin)
 
 $(lua_bin): $(lua_all_objs) $(luaunit_lua_dir)/luaunit.lua | results/bin
 	$(cosmocc_bin) -mcosmo $(lua_all_objs) -o $@
