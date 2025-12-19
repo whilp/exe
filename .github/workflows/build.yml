@@ -9,7 +9,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,17 +27,47 @@ jobs:
           sudo chmod +x /usr/bin/ape
           sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register" || true
 
-      - name: Build lua
+      - name: Build ${{ matrix.arch }} lua.dbg
         run: make test-cosmopolitan-lua -j$(nproc)
 
-      - name: Copy to results
+      - name: Copy to cosmos
         run: |
-          mkdir -p results/bin
-          cp o/3p/cosmopolitan/lua/lua results/bin/
+          mkdir -p cosmos/${{ matrix.arch }}/bin
+          cp o/3p/cosmopolitan/lua/lua cosmos/${{ matrix.arch }}/bin/lua.dbg
+          file cosmos/${{ matrix.arch }}/bin/lua.dbg
+
+      - name: Upload ${{ matrix.arch }} lua.dbg
+        uses: actions/upload-artifact@v4
+        with:
+          name: lua-dbg-${{ matrix.arch }}
+          path: cosmos/${{ matrix.arch }}/bin/
+
+  combine:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download x86_64 lua.dbg
+        uses: actions/download-artifact@v4
+        with:
+          name: lua-dbg-x86_64
+          path: cosmos/x86_64/bin/
+
+      - name: Download aarch64 lua.dbg
+        uses: actions/download-artifact@v4
+        with:
+          name: lua-dbg-aarch64
+          path: cosmos/aarch64/bin/
+
+      - name: Create fat binary
+        run: |
+          make fatten
           ls -lh results/bin/
           file results/bin/*
 
-      - name: Upload lua binary
+      - name: Upload fat binary
         uses: actions/upload-artifact@v4
         with:
           name: lua
@@ -38,7 +75,7 @@ jobs:
 
   test:
     runs-on: ${{ matrix.os }}
-    needs: build
+    needs: combine
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, ubuntu-24.04-arm]
