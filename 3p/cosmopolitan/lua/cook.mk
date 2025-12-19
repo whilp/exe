@@ -12,6 +12,8 @@ $(cosmopolitan_lua_patched): $(cosmopolitan_src)
 	cp $(CURDIR)/$(cosmopolitan_lua_patch_dir)/lre.h $(dir $(cosmopolitan_src))/third_party/lua/
 	cp $(dir $(cosmopolitan_src))/tool/net/lsqlite3.c $(dir $(cosmopolitan_src))/third_party/lua/
 	cp $(CURDIR)/$(cosmopolitan_lua_patch_dir)/lsqlite3.h $(dir $(cosmopolitan_src))/third_party/lua/
+	cp $(dir $(cosmopolitan_src))/tool/net/largon2.c $(dir $(cosmopolitan_src))/third_party/lua/
+	cp $(CURDIR)/$(cosmopolitan_lua_patch_dir)/largon2.h $(dir $(cosmopolitan_src))/third_party/lua/
 	cd $(dir $(cosmopolitan_src)) && patch -p1 < $(CURDIR)/$(cosmopolitan_lua_patch_dir)/BUILD.mk.patch
 	cd $(dir $(cosmopolitan_src)) && patch -p1 < $(CURDIR)/$(cosmopolitan_lua_patch_dir)/lua.main.c.patch
 	touch $@

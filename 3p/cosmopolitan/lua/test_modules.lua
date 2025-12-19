@@ -12,7 +12,6 @@ function test_re_module_exists()
 end
 
 function test_argon2_module_exists()
-    lu.skipIf(true, "argon2 module is redbean-specific")
     lu.assertNotNil(argon2, "argon2 module should be compiled into lua")
 end
 
