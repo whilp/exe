@@ -9,31 +9,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Register APE binfmt
         run: |
           sudo wget -q -O /usr/bin/ape https://cosmo.zip/pub/cosmos/bin/ape-$(uname -m).elf
           sudo chmod +x /usr/bin/ape
           sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register" || true
 
-      - name: Build
-        run: make -f Makefile.experiment results/bin/hello
+      - name: Download and extract cosmopolitan
+        run: |
+          curl -fsSL -o cosmo.tar.gz https://github.com/jart/cosmopolitan/archive/refs/tags/4.0.2.tar.gz
+          tar -xzf cosmo.tar.gz
+
+      - name: Build hello
+        run: |
+          cd cosmopolitan-4.0.2
+          make -j$(nproc) o//examples/hello
 
       - name: Test on build host
-        run: ./results/bin/hello
+        run: ./cosmopolitan-4.0.2/o//examples/hello
 
       - name: Check binary
         run: |
-          file results/bin/hello
-          ls -la results/bin/
+          file cosmopolitan-4.0.2/o//examples/hello
+          ls -la cosmopolitan-4.0.2/o//examples/hello*
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: hello
-          path: results/bin/hello
+          path: cosmopolitan-4.0.2/o//examples/hello
 
   test:
     needs: build
@@ -46,10 +50,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: hello
-          path: results/bin/
+          path: .
 
       - name: Make executable
-        run: chmod +x results/bin/hello
+        run: chmod +x hello
 
       - name: Run test
-        run: ./results/bin/hello
+        run: ./hello
