@@ -1,4 +1,4 @@
-name: Experiment - cosmocc test
+name: Build lua (experiment)
 
 on:
   push:
@@ -9,58 +9,50 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Register APE binfmt
         run: |
           sudo wget -q -O /usr/bin/ape https://cosmo.zip/pub/cosmos/bin/ape-$(uname -m).elf
           sudo chmod +x /usr/bin/ape
           sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register" || true
 
-      - name: Download cosmocc
-        run: |
-          curl -fsSL -o cosmocc.zip https://cosmo.zip/pub/cosmocc/cosmocc-4.0.2.zip
-          mkdir -p cosmocc
-          unzip -q cosmocc.zip -d cosmocc
-
-      - name: Build hello with cosmocc
-        run: |
-          cat > hello.c << 'EOF'
-          #include <stdio.h>
-          int main() {
-            printf("hello world\n");
-            return 0;
-          }
-          EOF
-          ./cosmocc/bin/cosmocc -o hello hello.c
-
-      - name: Test on build host
-        run: ./hello
+      - name: Build lua fat binary
+        run: make lua -j$(nproc)
 
       - name: Check binary
         run: |
-          file hello
-          ls -la hello*
+          ls -lh results/bin/
+          file results/bin/lua
 
-      - name: Upload binary
+      - name: Test on build host
+        run: results/bin/lua -v
+
+      - name: Upload lua binary
         uses: actions/upload-artifact@v4
         with:
-          name: hello
-          path: hello
+          name: lua
+          path: results/bin/
 
   test:
-    needs: build
     runs-on: ${{ matrix.os }}
+    needs: build
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, ubuntu-24.04-arm]
     steps:
-      - name: Download binary
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download lua binary
         uses: actions/download-artifact@v4
         with:
-          name: hello
-          path: .
+          name: lua
+          path: results/bin/
 
-      - name: Make executable
-        run: chmod +x hello
+      - name: Make binaries executable
+        run: chmod +x results/bin/*
 
-      - name: Run test
-        run: ./hello
+      - name: Run tests
+        run: results/bin/lua 3p/lua/test.lua
