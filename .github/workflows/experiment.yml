@@ -1,0 +1,55 @@
+name: Experiment - cosmocc test
+
+on:
+  push:
+    branches: [experiment/cosmocc-test]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Register APE binfmt
+        run: |
+          sudo wget -q -O /usr/bin/ape https://cosmo.zip/pub/cosmos/bin/ape-$(uname -m).elf
+          sudo chmod +x /usr/bin/ape
+          sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register" || true
+
+      - name: Build
+        run: make -f Makefile.experiment results/bin/hello
+
+      - name: Test on build host
+        run: ./results/bin/hello
+
+      - name: Check binary
+        run: |
+          file results/bin/hello
+          ls -la results/bin/
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello
+          path: results/bin/hello
+
+  test:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, ubuntu-24.04-arm]
+    steps:
+      - name: Download binary
+        uses: actions/download-artifact@v4
+        with:
+          name: hello
+          path: results/bin/
+
+      - name: Make executable
+        run: chmod +x results/bin/hello
+
+      - name: Run test
+        run: ./results/bin/hello
