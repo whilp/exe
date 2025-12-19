@@ -1,0 +1,120 @@
+# lua fat binary build using cosmocc
+# sources from cosmopolitan repo, compiled with cosmocc toolchain
+
+# directories
+lua_cosmo_dir := $(dir $(cosmopolitan_src))
+lua_build_dir := o/lua
+
+# compiler flags (uses $(zip) and $(cosmocc_bin) from 3p/cook.mk)
+lua_cflags := -mcosmo -include stdbool.h -I$(lua_cosmo_dir)
+
+# sqlite3 flags
+lua_sqlite_flags := \
+	-DNDEBUG \
+	-DSQLITE_CORE \
+	-DSQLITE_OS_UNIX \
+	-DBUILD_sqlite \
+	-DHAVE_USLEEP \
+	-DHAVE_READLINK \
+	-DHAVE_FCHOWN \
+	-DHAVE_LSTAT \
+	-DHAVE_GMTIME_R \
+	-DHAVE_FDATASYNC \
+	-DHAVE_STRCHRNUL \
+	-DHAVE_LOCALTIME_R \
+	-DHAVE_MALLOC_USABLE_SIZE \
+	-DSQLITE_THREADSAFE=1 \
+	-DSQLITE_MAX_EXPR_DEPTH=0 \
+	-DSQLITE_DEFAULT_MEMSTATUS=0 \
+	-DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1 \
+	-DSQLITE_LIKE_DOESNT_MATCH_BLOBS \
+	-DSQLITE_OMIT_UTF16 \
+	-DSQLITE_OMIT_TCL_VARIABLE \
+	-DSQLITE_OMIT_LOAD_EXTENSION \
+	-DSQLITE_OMIT_AUTOINIT \
+	-DSQLITE_OMIT_GET_TABLE \
+	-DSQLITE_OMIT_COMPILEOPTION_DIAGS \
+	-DSQLITE_HAVE_C99_MATH_FUNCS \
+	-DSQLITE_ENABLE_MATH_FUNCTIONS \
+	-DSQLITE_ENABLE_JSON1 \
+	-DSQLITE_ENABLE_DESERIALIZE \
+	-DSQLITE_ENABLE_PREUPDATE_HOOK \
+	-DSQLITE_ENABLE_SESSION
+
+# lua core sources
+lua_core_srcs := \
+	lapi.c lauxlib.c lbaselib.c lcode.c lcorolib.c ldblib.c ldebug.c \
+	ldo.c ldump.c lfunc.c lgc.c linit.c liolib.c llex.c llock.c \
+	lmathlib.c lmem.c lnotice.c loadlib.c lobject.c lopcodes.c loslib.c \
+	lparser.c lrepl.c lstate.c lstring.c lstrlib.c ltable.c ltablib.c \
+	ltests.c ltm.c luacallwithtrace.c luaencodejsondata.c luaencodeluadata.c \
+	luaencodeurl.c luaformatstack.c luaparseurl.c luaprintstack.c \
+	luapushheader.c luapushheaders.c luapushlatin1.c luapushurlparams.c \
+	lundump.c lutf8lib.c lvm.c lzio.c serialize.c visitor.c
+
+# lua extension sources (from tool/net, available in third_party/lua)
+lua_ext_srcs := lunix.c lpath.c lre.c lsqlite3.c largon2.c lua.main.c
+
+# linenoise source
+lua_linenoise_srcs := linenoise.c
+
+# argon2 sources
+lua_argon2_srcs := argon2.c blake2b.c core.c encoding.c ref.c
+
+# regex sources
+lua_regex_srcs := regcomp.c regerror.c regexec.c tre-mem.c
+
+# sqlite3 sources (all .c except shell files)
+lua_sqlite3_srcs := $(filter-out %shell.c,$(notdir $(wildcard $(lua_cosmo_dir)/third_party/sqlite3/*.c)))
+
+# object files
+lua_core_objs := $(addprefix $(lua_build_dir)/lua/,$(lua_core_srcs:.c=.o))
+lua_ext_objs := $(addprefix $(lua_build_dir)/lua/,$(lua_ext_srcs:.c=.o))
+lua_linenoise_objs := $(addprefix $(lua_build_dir)/linenoise/,$(lua_linenoise_srcs:.c=.o))
+lua_argon2_objs := $(addprefix $(lua_build_dir)/argon2/,$(lua_argon2_srcs:.c=.o))
+lua_regex_objs := $(addprefix $(lua_build_dir)/regex/,$(lua_regex_srcs:.c=.o))
+lua_sqlite3_objs := $(addprefix $(lua_build_dir)/sqlite3/,$(lua_sqlite3_srcs:.c=.o))
+
+lua_all_objs := $(lua_core_objs) $(lua_ext_objs) $(lua_linenoise_objs) $(lua_argon2_objs) $(lua_regex_objs) $(lua_sqlite3_objs)
+
+# output
+lua_bin := results/bin/lua
+
+.PHONY: lua clean-lua
+
+lua: $(lua_bin)
+
+# dependencies on cosmopolitan source and cosmocc toolchain
+$(lua_bin): $(cosmopolitan_src) $(cosmocc_bin)
+$(lua_all_objs): $(cosmopolitan_src) $(cosmocc_bin)
+
+$(lua_bin): $(lua_all_objs) $(luaunit_lua_dir)/luaunit.lua | results/bin
+	$(cosmocc_bin) -mcosmo $(lua_all_objs) -o $@
+	cd $(luaunit_lua_dir)/.. && $(zip) -qr $(CURDIR)/$@ $(notdir $(luaunit_lua_dir))
+
+# lua core objects
+$(lua_build_dir)/lua/%.o: $(lua_cosmo_dir)/third_party/lua/%.c | $(lua_build_dir)/lua
+	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
+
+# linenoise objects
+$(lua_build_dir)/linenoise/%.o: $(lua_cosmo_dir)/third_party/linenoise/%.c | $(lua_build_dir)/linenoise
+	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
+
+# argon2 objects
+$(lua_build_dir)/argon2/%.o: $(lua_cosmo_dir)/third_party/argon2/%.c | $(lua_build_dir)/argon2
+	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
+
+# regex objects
+$(lua_build_dir)/regex/%.o: $(lua_cosmo_dir)/third_party/regex/%.c | $(lua_build_dir)/regex
+	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
+
+# sqlite3 objects
+$(lua_build_dir)/sqlite3/%.o: $(lua_cosmo_dir)/third_party/sqlite3/%.c | $(lua_build_dir)/sqlite3
+	$(cosmocc_bin) $(lua_cflags) $(lua_sqlite_flags) -c $< -o $@
+
+# directory creation
+$(lua_build_dir)/lua $(lua_build_dir)/linenoise $(lua_build_dir)/argon2 $(lua_build_dir)/regex $(lua_build_dir)/sqlite3 results/bin:
+	mkdir -p $@
+
+clean-lua:
+	rm -rf $(lua_build_dir) $(lua_bin)
