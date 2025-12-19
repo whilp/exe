@@ -20,11 +20,12 @@ $(cosmopolitan_lua_patched): $(cosmopolitan_src)
 
 cosmopolitan_lua_arch := $(shell uname -m)
 cosmopolitan_lua_mode := $(if $(filter aarch64 arm64,$(cosmopolitan_lua_arch)),aarch64,)
+cosmopolitan_lua_dbg := $(dir $(cosmopolitan_src))/o/$(cosmopolitan_lua_mode)/third_party/lua/lua.dbg
 
 $(cosmopolitan_lua): $(cosmopolitan_lua_deps)
 	cd $(dir $(cosmopolitan_src)) && /usr/bin/make MODE=$(cosmopolitan_lua_mode) COSMOCC=$(cosmocc_dir) -j8 o/$(cosmopolitan_lua_mode)/third_party/lua/lua.dbg
 	mkdir -p $(dir $@)
-	cp $(dir $(cosmopolitan_src))/o/$(cosmopolitan_lua_mode)/third_party/lua/lua.dbg $@
+	cp $(cosmopolitan_lua_dbg) $@
 	cd $(cosmopolitan_lua_lib_dir)/.. && $(zip) -qr $@ $(notdir $(cosmopolitan_lua_lib_dir))
 
 .PHONY: test-cosmopolitan-lua
@@ -39,7 +40,7 @@ lua-aarch64: test-cosmopolitan-lua
 	mkdir -p cosmos/aarch64/bin
 	cp $(cosmopolitan_lua) cosmos/aarch64/bin/lua
 
-lua-fatten: $(cosmocc_bin)
+lua-fatten: $(cosmocc_bin) $(luaunit_libs)/luaunit.lua
 	mkdir -p results/bin
 	$(cosmocc_dir)/bin/apelink \
 		-l $(cosmocc_dir)/bin/ape-x86_64.elf \
@@ -48,6 +49,7 @@ lua-fatten: $(cosmocc_bin)
 		-o results/bin/lua \
 		cosmos/x86_64/bin/lua.dbg \
 		cosmos/aarch64/bin/lua.dbg
+	cd $(luaunit_libs)/.. && $(zip) -qr $(CURDIR)/results/bin/lua $(notdir $(luaunit_libs))
 
 lua-test: results/bin/lua
 	results/bin/lua $(cosmopolitan_lua_tests)/test.lua
