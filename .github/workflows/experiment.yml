@@ -15,29 +15,36 @@ jobs:
           sudo chmod +x /usr/bin/ape
           sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register" || true
 
-      - name: Download and extract cosmopolitan
+      - name: Download cosmocc
         run: |
-          curl -fsSL -o cosmo.tar.gz https://github.com/jart/cosmopolitan/archive/refs/tags/4.0.2.tar.gz
-          tar -xzf cosmo.tar.gz
+          mkdir -p cosmocc
+          curl -fsSL https://cosmo.zip/pub/cosmocc/cosmocc-4.0.2.zip | funzip > cosmocc.zip
+          unzip -q cosmocc.zip -d cosmocc
 
-      - name: Build hello
+      - name: Build hello with cosmocc
         run: |
-          cd cosmopolitan-4.0.2
-          make -j$(nproc) o//examples/hello
+          cat > hello.c << 'EOF'
+          #include <stdio.h>
+          int main() {
+            printf("hello world\n");
+            return 0;
+          }
+          EOF
+          ./cosmocc/bin/cosmocc -o hello hello.c
 
       - name: Test on build host
-        run: ./cosmopolitan-4.0.2/o//examples/hello
+        run: ./hello
 
       - name: Check binary
         run: |
-          file cosmopolitan-4.0.2/o//examples/hello
-          ls -la cosmopolitan-4.0.2/o//examples/hello*
+          file hello
+          ls -la hello*
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: hello
-          path: cosmopolitan-4.0.2/o//examples/hello
+          path: hello
 
   test:
     needs: build
