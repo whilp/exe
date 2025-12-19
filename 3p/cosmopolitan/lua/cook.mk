@@ -20,12 +20,11 @@ $(cosmopolitan_lua_patched): $(cosmopolitan_src)
 
 cosmopolitan_lua_arch := $(shell uname -m)
 cosmopolitan_lua_mode := $(if $(filter aarch64 arm64,$(cosmopolitan_lua_arch)),aarch64,)
-cosmopolitan_lua_outdir := $(if $(cosmopolitan_lua_mode),o/$(cosmopolitan_lua_mode),o)
 
 $(cosmopolitan_lua): $(cosmopolitan_lua_deps)
-	cd $(dir $(cosmopolitan_src)) && SHELL=/bin/sh /usr/bin/make COSMOCC=$(cosmocc_dir) -j8 $(cosmopolitan_lua_outdir)/third_party/lua/lua
+	cd $(dir $(cosmopolitan_src)) && /usr/bin/make MODE=$(cosmopolitan_lua_mode) COSMOCC=$(cosmocc_dir) -j8 o/$(cosmopolitan_lua_mode)/third_party/lua/lua
 	mkdir -p $(dir $@)
-	cp $(dir $(cosmopolitan_src))/$(cosmopolitan_lua_outdir)/third_party/lua/lua $@
+	cp $(dir $(cosmopolitan_src))/o/$(cosmopolitan_lua_mode)/third_party/lua/lua $@
 	cd $(cosmopolitan_lua_lib_dir)/.. && $(zip) -qr $@ $(notdir $(cosmopolitan_lua_lib_dir))
 
 .PHONY: test-cosmopolitan-lua
