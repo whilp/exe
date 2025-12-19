@@ -95,14 +95,14 @@ lua_all_objs := $(lua_core_objs) $(lua_ext_objs) $(lua_linenoise_objs) $(lua_arg
 # output
 lua_bin := results/bin/lua
 
-.PHONY: lua clean-lua lua-deps
+.PHONY: lua clean-lua
 
-# lua-deps ensures sources are extracted before any compilation
-lua-deps: $(cosmopolitan_src) $(cosmocc_bin)
+# Force serial execution to ensure dependencies are ready before pattern matching
+lua:
+	$(MAKE) $(cosmopolitan_src) $(cosmocc_bin) $(luaunit_lua_dir)/luaunit.lua
+	$(MAKE) $(lua_bin)
 
-lua: lua-deps $(lua_bin)
-
-$(lua_bin): $(lua_all_objs) $(luaunit_lua_dir)/luaunit.lua | results/bin
+$(lua_bin): $(lua_all_objs) | results/bin
 	$(cosmocc_bin) -mcosmo $(lua_all_objs) -o $@
 	cd $(luaunit_lua_dir)/.. && $(zip) -qr $(CURDIR)/$@ $(notdir $(luaunit_lua_dir))
 
