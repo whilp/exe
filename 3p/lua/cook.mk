@@ -52,8 +52,9 @@ lua_core_srcs := \
 	luapushheader.c luapushheaders.c luapushlatin1.c luapushurlparams.c \
 	lundump.c lutf8lib.c lvm.c lzio.c serialize.c visitor.c
 
-# lua extension sources (from tool/net, available in third_party/lua)
-lua_ext_srcs := lunix.c lpath.c lre.c lsqlite3.c largon2.c lua.main.c
+# lua extension sources - some in third_party/lua, some in tool/net
+lua_ext_lua_srcs := lunix.c lua.main.c
+lua_ext_net_srcs := lpath.c lre.c lsqlite3.c largon2.c
 
 # linenoise source
 lua_linenoise_srcs := linenoise.c
@@ -84,20 +85,19 @@ lua_sqlite3_srcs := \
 
 # object files
 lua_core_objs := $(addprefix $(lua_build_dir)/lua/,$(lua_core_srcs:.c=.o))
-lua_ext_objs := $(addprefix $(lua_build_dir)/lua/,$(lua_ext_srcs:.c=.o))
+lua_ext_lua_objs := $(addprefix $(lua_build_dir)/lua/,$(lua_ext_lua_srcs:.c=.o))
+lua_ext_net_objs := $(addprefix $(lua_build_dir)/net/,$(lua_ext_net_srcs:.c=.o))
 lua_linenoise_objs := $(addprefix $(lua_build_dir)/linenoise/,$(lua_linenoise_srcs:.c=.o))
 lua_argon2_objs := $(addprefix $(lua_build_dir)/argon2/,$(lua_argon2_srcs:.c=.o))
 lua_regex_objs := $(addprefix $(lua_build_dir)/regex/,$(lua_regex_srcs:.c=.o))
 lua_sqlite3_objs := $(addprefix $(lua_build_dir)/sqlite3/,$(lua_sqlite3_srcs:.c=.o))
 
-lua_all_objs := $(lua_core_objs) $(lua_ext_objs) $(lua_linenoise_objs) $(lua_argon2_objs) $(lua_regex_objs) $(lua_sqlite3_objs)
+lua_all_objs := $(lua_core_objs) $(lua_ext_lua_objs) $(lua_ext_net_objs) $(lua_linenoise_objs) $(lua_argon2_objs) $(lua_regex_objs) $(lua_sqlite3_objs)
 
 # output
 lua_bin := results/bin/lua
 
-.PHONY: lua clean-lua
-
-# Force serial execution to ensure dependencies are ready before pattern matching
+# target for lua fat binary - use recursive make to ensure sources exist before compiling
 lua:
 	$(MAKE) $(cosmopolitan_src) $(cosmocc_bin) $(luaunit_lua_dir)/luaunit.lua
 	$(MAKE) $(lua_bin)
@@ -106,8 +106,12 @@ $(lua_bin): $(lua_all_objs) | results/bin
 	$(cosmocc_bin) -mcosmo $(lua_all_objs) -o $@
 	cd $(luaunit_lua_dir)/.. && $(zip) -qr $(CURDIR)/$@ $(notdir $(luaunit_lua_dir))
 
-# lua core objects
+# lua core objects (from third_party/lua)
 $(lua_build_dir)/lua/%.o: $(lua_cosmo_dir)/third_party/lua/%.c | $(lua_build_dir)/lua
+	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
+
+# lua extension objects from tool/net
+$(lua_build_dir)/net/%.o: $(lua_cosmo_dir)/tool/net/%.c | $(lua_build_dir)/net
 	$(cosmocc_bin) $(lua_cflags) -c $< -o $@
 
 # linenoise objects
@@ -127,8 +131,13 @@ $(lua_build_dir)/sqlite3/%.o: $(lua_cosmo_dir)/third_party/sqlite3/%.c | $(lua_b
 	$(cosmocc_bin) $(lua_cflags) $(lua_sqlite_flags) -c $< -o $@
 
 # directory creation
-$(lua_build_dir)/lua $(lua_build_dir)/linenoise $(lua_build_dir)/argon2 $(lua_build_dir)/regex $(lua_build_dir)/sqlite3 results/bin:
+$(lua_build_dir)/lua $(lua_build_dir)/net $(lua_build_dir)/linenoise $(lua_build_dir)/argon2 $(lua_build_dir)/regex $(lua_build_dir)/sqlite3:
 	mkdir -p $@
+
+results/bin:
+	mkdir -p $@
+
+.PHONY: lua clean-lua
 
 clean-lua:
 	rm -rf $(lua_build_dir) $(lua_bin)
