@@ -23,8 +23,10 @@ jobs:
       - name: Cache tools
         uses: actions/cache@v4
         with:
-          path: o/3p
-          key: tools-${{ hashFiles('3p/**/cook.mk') }}
+          path: |
+            o/3p/cosmocc
+            o/3p/cosmos
+          key: tools-${{ hashFiles('3p/cosmocc/cook.mk', '3p/cosmos/cook.mk') }}
 
       - name: Build
         run: make build -j$(nproc)
