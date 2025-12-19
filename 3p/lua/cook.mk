@@ -64,8 +64,23 @@ lua_argon2_srcs := argon2.c blake2b.c core.c encoding.c ref.c
 # regex sources
 lua_regex_srcs := regcomp.c regerror.c regexec.c tre-mem.c
 
-# sqlite3 sources (all .c except shell files)
-lua_sqlite3_srcs := $(filter-out %shell.c,$(notdir $(wildcard $(lua_cosmo_dir)/third_party/sqlite3/*.c)))
+# sqlite3 sources
+lua_sqlite3_srcs := \
+	alter.c analyze.c appendvfs.c attach.c auth.c backup.c bitvec.c btmutex.c \
+	btree.c build.c callback.c complete.c completion.c ctime.c date.c dbdata.c \
+	dbpage.c dbstat.c decimal.c delete.c expr.c fault.c fileio.c fkey.c fts3.c \
+	fts3_aux.c fts3_expr.c fts3_hash.c fts3_icu.c fts3_porter.c fts3_snippet.c \
+	fts3_tokenize_vtab.c fts3_tokenizer.c fts3_tokenizer1.c fts3_unicode.c \
+	fts3_unicode2.c fts3_write.c fts5.c func.c global.c hash.c icu.c ieee754.c \
+	insert.c json.c legacy.c loadext.c main.c malloc.c mem0.c mem1.c mem2.c \
+	mem3.c mem5.c memdb.c memjournal.c memtrace.c mutex.c mutex_noop.c \
+	mutex_unix.c notify.c opcodes.c os.c os_kv.c os_unix.c pager.c parse.c \
+	pcache.c pcache1.c pragma.c prepare.c printf.c random.c resolve.c rowset.c \
+	rtree.c select.c series.c shathree.c sqlar.c sqlite3expert.c sqlite3rbu.c \
+	sqlite3session.c status.c stmt.c table.c threads.c tokenize.c treeview.c \
+	trigger.c uint.c update.c upsert.c userauth.c utf.c util.c vacuum.c vdbe.c \
+	vdbeapi.c vdbeaux.c vdbeblob.c vdbemem.c vdbesort.c vdbetrace.c vdbevtab.c \
+	vtab.c wal.c walker.c where.c wherecode.c whereexpr.c window.c zipfile.c
 
 # object files
 lua_core_objs := $(addprefix $(lua_build_dir)/lua/,$(lua_core_srcs:.c=.o))
