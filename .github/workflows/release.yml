@@ -151,13 +151,13 @@ jobs:
             - Runs on Linux, macOS, Windows, FreeBSD, OpenBSD, NetBSD
             - Supports x86_64 and aarch64 architectures (fat binary)
             - Single executable, no installation required
-            - Includes cosmopolitan Lua modules:
-              - `unix` - POSIX system calls, process control, file I/O
-              - `path` - Path manipulation (join, basename, dirname)
-              - `re` - Regular expressions using TRE library
-              - `lsqlite3` - Embedded SQLite database
-              - `argon2` - Argon2 password hashing
-              - `cosmo` - Utility functions (encoding, hashing, compression, IP handling)
+            - Includes `cosmo` module with submodules:
+              - `cosmo.unix` - POSIX system calls, process control, file I/O
+              - `cosmo.path` - Path manipulation (join, basename, dirname)
+              - `cosmo.re` - Regular expressions using TRE library
+              - `cosmo.sqlite3` - Embedded SQLite database
+              - `cosmo.argon2` - Argon2 password hashing
+              - Plus utility functions (encoding, hashing, compression, IP handling)
 
             ## Usage
 
@@ -165,8 +165,8 @@ jobs:
             chmod +x lua
             ./lua
             ./lua script.lua
-            ./lua -e "print(unix.getpid())"  # unix is global
-            ./lua -e "local path = require('path'); print(path.basename('/foo/bar.txt'))"
+            ./lua -e "local cosmo = require('cosmo'); print(cosmo.unix.getpid())"
+            ./lua -e "local cosmo = require('cosmo'); print(cosmo.path.basename('/foo/bar.txt'))"
             ```
 
             ## Verification
