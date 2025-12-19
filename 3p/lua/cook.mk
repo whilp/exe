@@ -1,8 +1,8 @@
 # lua fat binary build using cosmocc
 # sources from cosmopolitan repo, compiled with cosmocc toolchain
 
-# directories
-lua_cosmo_dir := $(dir $(cosmopolitan_src))
+# directories (hardcode version to avoid variable expansion timing issues)
+lua_cosmo_dir := $(3p)/cosmopolitan/cosmopolitan-4.0.2
 lua_build_dir := o/lua
 
 # compiler flags (uses $(zip) and $(cosmocc_bin) from 3p/cook.mk)
