@@ -34,9 +34,9 @@ build: $(COSMOCC) $(COSMO_DIR)
 	cd $(COSMO_DIR) && /usr/bin/make COSMOCC=$(CURDIR)/$(COSMOCC_DIR) -j$$(nproc) o//examples/hello.dbg
 
 results/bin/hello: $(COSMOCC) $(COSMO_DIR)
-	cd $(COSMO_DIR) && /usr/bin/make COSMOCC=$(CURDIR)/$(COSMOCC_DIR) -j$$(nproc) o//examples/hello.dbg
+	cd $(COSMO_DIR) && /usr/bin/make COSMOCC=$(CURDIR)/$(COSMOCC_DIR) -j$$(nproc) o//examples/hello
 	mkdir -p results/bin
-	cp $(COSMO_DIR)/o//examples/hello.dbg results/bin/hello
+	cp $(COSMO_DIR)/o//examples/hello results/bin/hello
 
 test: results/bin/hello
 	./results/bin/hello
