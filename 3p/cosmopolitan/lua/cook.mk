@@ -18,10 +18,13 @@ $(cosmopolitan_lua_patched): $(cosmopolitan_src)
 	cd $(dir $(cosmopolitan_src)) && patch -p1 < $(CURDIR)/$(cosmopolitan_lua_patch_dir)/lua.main.c.patch
 	touch $@
 
+cosmopolitan_lua_mode := $(shell uname -m | sed 's/x86_64//' | sed 's/aarch64/aarch64/' | sed 's/arm64/aarch64/')
+cosmopolitan_lua_outdir := $(if $(cosmopolitan_lua_mode),o/$(cosmopolitan_lua_mode),o)
+
 $(cosmopolitan_lua): $(cosmopolitan_lua_deps)
-	cd $(dir $(cosmopolitan_src)) && $(make) -j8 o//third_party/lua/lua
+	cd $(dir $(cosmopolitan_src)) && $(make) -j8 $(cosmopolitan_lua_outdir)/third_party/lua/lua
 	mkdir -p $(dir $@)
-	cp $(dir $(cosmopolitan_src))/o//third_party/lua/lua $@
+	cp $(dir $(cosmopolitan_src))/$(cosmopolitan_lua_outdir)/third_party/lua/lua $@
 	cd $(cosmopolitan_lua_lib_dir)/.. && $(zip) -qr $@ $(notdir $(cosmopolitan_lua_lib_dir))
 
 .PHONY: test-cosmopolitan-lua
