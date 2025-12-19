@@ -17,8 +17,8 @@ jobs:
 
       - name: Download cosmocc
         run: |
+          curl -fsSL -o cosmocc.zip https://cosmo.zip/pub/cosmocc/cosmocc-4.0.2.zip
           mkdir -p cosmocc
-          curl -fsSL https://cosmo.zip/pub/cosmocc/cosmocc-4.0.2.zip | funzip > cosmocc.zip
           unzip -q cosmocc.zip -d cosmocc
 
       - name: Build hello with cosmocc
