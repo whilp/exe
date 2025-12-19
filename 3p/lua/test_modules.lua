@@ -1,3 +1,9 @@
+-- test modules that require explicit require()
+local path = require('path')
+local re = require('re')
+local argon2 = require('argon2')
+local lsqlite3 = require('lsqlite3')
+
 function test_unix_module_exists()
     lu.assertNotNil(unix, "unix module should be compiled into lua")
 end
