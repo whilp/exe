@@ -17,6 +17,5 @@ function test_argon2_module_exists()
 end
 
 function test_lsqlite3_module_exists()
-    lu.skipIf(true, "lsqlite3 module is redbean-specific")
     lu.assertNotNil(lsqlite3, "lsqlite3 module should be compiled into lua")
 end

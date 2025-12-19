@@ -1,21 +1,24 @@
---- a/third_party/lua/lua.main.c
-+++ b/third_party/lua/lua.main.c
-@@ -50,6 +50,8 @@
+--- a/third_party/lua/lua.main.c	2025-12-18 23:06:28.725901808 +0000
++++ b/third_party/lua/lua.main.c	2025-12-18 23:07:20.067904394 +0000
+@@ -50,6 +50,9 @@
  #include "third_party/lua/lrepl.h"
  #include "third_party/lua/lualib.h"
  #include "third_party/lua/lunix.h"
 +#include "third_party/lua/lpath.h"
 +#include "third_party/lua/lre.h"
++#include "third_party/lua/lsqlite3.h"
  #include "libc/cosmo.h"
  #include "libc/mem/leaks.h"
  __static_yoink("lua_notice");
-@@ -376,6 +378,10 @@
+@@ -376,6 +379,12 @@
    luaL_openlibs(L);  /* open standard libraries */
    luaL_requiref(L, "unix", LuaUnix, 1);
    lua_pop(L, 1);
 +  luaL_requiref(L, "path", LuaPath, 1);
 +  lua_pop(L, 1);
 +  luaL_requiref(L, "re", LuaRe, 1);
++  lua_pop(L, 1);
++  luaL_requiref(L, "lsqlite3", luaopen_lsqlite3, 1);
 +  lua_pop(L, 1);
    createargtable(L, argv, argc, script);  /* create table 'arg' */
    lua_gc(L, LUA_GCRESTART);  /* start GC... */
