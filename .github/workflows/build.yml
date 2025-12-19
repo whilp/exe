@@ -1,17 +1,11 @@
-name: Build lua
+name: Build
 
 on:
   push:
     branches: [main, experiment/cosmocc-test]
-    tags: ['v*']
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release tag (e.g., v0.1.0)'
-        required: false
-        type: string
 
 jobs:
   build:
@@ -26,22 +20,14 @@ jobs:
           sudo chmod +x /usr/bin/ape
           sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register" || true
 
-      - name: Build lua fat binary
+      - name: Build
         run: make build -j$(nproc)
 
-      - name: Check binary
-        run: |
-          ls -lh results/bin/
-          file results/bin/lua
-
-      - name: Test on build host
-        run: results/bin/lua -v
-
-      - name: Upload lua binary
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: lua
-          path: results/bin/
+          name: results
+          path: results/
 
   test:
     runs-on: ${{ matrix.os }}
@@ -53,20 +39,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download lua binary
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: lua
-          path: results/bin/
-
-      - name: Make binaries executable
-        run: chmod +x results/bin/*
+          name: results
+          path: results/
 
       - name: Run tests
-        run: results/bin/lua 3p/lua/test.lua
+        run: make check
 
   release:
-    if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: test
     permissions:
@@ -75,72 +58,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download lua binary
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: lua
-          path: results/bin/
+          name: results
+          path: results/
 
       - name: Get version
         id: version
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
-            echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
-          else
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          fi
+          echo "tag=$(date -u +%Y-%m-%d)-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
       - name: Create checksums
         run: |
           cd results/bin
-          sha256sum lua > SHA256SUMS
+          sha256sum * > SHA256SUMS
           cat SHA256SUMS
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: Release ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
           draft: false
           prerelease: false
           files: |
-            results/bin/lua
-            results/bin/SHA256SUMS
-          body: |
-            # Actually Portable Lua ${{ steps.version.outputs.tag }}
-
-            Lua 5.4.7 with cosmopolitan modules, built as an Actually Portable Executable.
-
-            ## Features
-
-            - Runs on Linux, macOS, Windows, FreeBSD, OpenBSD, NetBSD
-            - Supports x86_64 and aarch64 architectures (fat binary)
-            - Single executable, no installation required
-            - Includes `cosmo` module with submodules:
-              - `cosmo.unix` - POSIX system calls, process control, file I/O
-              - `cosmo.path` - Path manipulation (join, basename, dirname)
-              - `cosmo.re` - Regular expressions using TRE library
-              - `cosmo.sqlite3` - Embedded SQLite database
-              - `cosmo.argon2` - Argon2 password hashing
-              - Plus utility functions (encoding, hashing, compression, IP handling)
-
-            ## Usage
-
-            ```bash
-            chmod +x lua
-            ./lua
-            ./lua script.lua
-            ./lua -e "local cosmo = require('cosmo'); print(cosmo.unix.getpid())"
-            ./lua -e "local cosmo = require('cosmo'); print(cosmo.path.basename('/foo/bar.txt'))"
-            ```
-
-            ## Verification
-
-            ```bash
-            sha256sum -c SHA256SUMS
-            ```
-
-            ## Technical details
-
-            - Built with [Cosmopolitan Libc](https://justine.lol/cosmopolitan/)
-            - APE format allows single binary to run across platforms
+            results/bin/*
