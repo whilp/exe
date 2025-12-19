@@ -63,7 +63,7 @@ jobs:
         run: chmod +x results/bin/*
 
       - name: Run tests
-        run: make test
+        run: results/bin/lua 3p/lua/test.lua
 
   release:
     if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
