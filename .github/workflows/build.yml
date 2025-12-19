@@ -46,7 +46,7 @@ jobs:
           path: results/
 
       - name: Run tests
-        run: make check
+        run: make test
 
   release:
     if: github.ref == 'refs/heads/main'
