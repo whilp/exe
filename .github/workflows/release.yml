@@ -157,6 +157,7 @@ jobs:
               - `re` - Regular expressions using TRE library
               - `lsqlite3` - Embedded SQLite database
               - `argon2` - Argon2 password hashing
+              - `cosmo` - Utility functions (encoding, hashing, compression, IP handling)
 
             ## Usage
 
@@ -164,7 +165,8 @@ jobs:
             chmod +x lua
             ./lua
             ./lua script.lua
-            ./lua -e "local unix = require('unix'); print(unix.getpid())"
+            ./lua -e "print(unix.getpid())"  # unix is global
+            ./lua -e "local path = require('path'); print(path.basename('/foo/bar.txt'))"
             ```
 
             ## Verification
