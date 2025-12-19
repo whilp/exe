@@ -3,13 +3,12 @@ include 3p/luaunit/cook.mk
 include 3p/cosmopolitan/cook.mk
 include 3p/cosmopolitan/lua/cook.mk
 
-#test: o/3p/lua
-#	3p/cosmocc/test
-#	3p/cosmos/test
-#	3p/cosmopolitan/test
-#	3p/cosmopolitan/lua/test
+build-x86_64: lua-x86_64
+build-aarch64: lua-aarch64
+fatten: lua-fatten
+test: lua-test
 
 clean:
-	rm -rf o
+	rm -rf o cosmos results
 
-.PHONY: test clean
+.PHONY: build-x86_64 build-aarch64 fatten test clean

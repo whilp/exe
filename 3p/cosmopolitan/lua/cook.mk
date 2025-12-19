@@ -27,3 +27,26 @@ $(cosmopolitan_lua): $(cosmopolitan_lua_deps)
 .PHONY: test-cosmopolitan-lua
 test-cosmopolitan-lua: $(cosmopolitan_lua)
 	$(cosmopolitan_lua) $(cosmopolitan_lua_tests)/test.lua
+
+lua-x86_64: test-cosmopolitan-lua
+	mkdir -p cosmos/x86_64/bin
+	cp $(cosmopolitan_lua) cosmos/x86_64/bin/lua
+
+lua-aarch64: test-cosmopolitan-lua
+	mkdir -p cosmos/aarch64/bin
+	cp $(cosmopolitan_lua) cosmos/aarch64/bin/lua
+
+lua-fatten:
+	mkdir -p results/bin
+	$(cosmocc_dir)/bin/apelink \
+		-l $(cosmocc_dir)/bin/ape-x86_64.elf \
+		-l $(cosmocc_dir)/bin/ape-aarch64.elf \
+		-M $(cosmocc_dir)/bin/ape-m1.c \
+		-o results/bin/lua \
+		cosmos/x86_64/bin/lua \
+		cosmos/aarch64/bin/lua
+
+lua-test: results/bin/lua
+	results/bin/lua $(cosmopolitan_lua_tests)/test.lua
+
+.PHONY: lua-x86_64 lua-aarch64 lua-fatten lua-test
