@@ -39,7 +39,7 @@ lua-aarch64: test-cosmopolitan-lua
 	mkdir -p cosmos/aarch64/bin
 	cp $(cosmopolitan_lua) cosmos/aarch64/bin/lua
 
-lua-fatten:
+lua-fatten: $(cosmocc_bin)
 	mkdir -p results/bin
 	$(cosmocc_dir)/bin/apelink \
 		-l $(cosmocc_dir)/bin/ape-x86_64.elf \
