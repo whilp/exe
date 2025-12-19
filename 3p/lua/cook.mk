@@ -4,9 +4,13 @@
 # directories (hardcode version to avoid variable expansion timing issues)
 lua_cosmo_dir := $(3p)/cosmopolitan/cosmopolitan-4.0.2
 lua_build_dir := o/lua
+lua_patch_dir := 3p/lua
 
 # compiler flags (uses $(zip) and $(cosmocc_bin) from 3p/cook.mk)
 lua_cflags := -mcosmo -include stdbool.h -I$(lua_cosmo_dir)
+
+# patching marker
+lua_patched := $(lua_build_dir)/.patched
 
 # sqlite3 flags
 lua_sqlite_flags := \
@@ -100,7 +104,17 @@ lua_bin := results/bin/lua
 # target for lua fat binary - use recursive make to ensure sources exist before compiling
 lua:
 	$(MAKE) $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(luaunit_lua_dir)/luaunit.lua
+	$(MAKE) $(lua_patched)
 	$(MAKE) $(lua_bin)
+
+# patch lua.main.c and copy headers to register redbean modules
+$(lua_patched): $(cosmopolitan_src) | $(lua_build_dir)
+	cp $(lua_patch_dir)/lpath.h $(lua_cosmo_dir)/third_party/lua/
+	cp $(lua_patch_dir)/lre.h $(lua_cosmo_dir)/third_party/lua/
+	cp $(lua_patch_dir)/lsqlite3.h $(lua_cosmo_dir)/third_party/lua/
+	cp $(lua_patch_dir)/largon2.h $(lua_cosmo_dir)/third_party/lua/
+	cd $(lua_cosmo_dir) && patch -p1 < $(CURDIR)/3p/cosmopolitan/lua/lua.main.c.patch
+	touch $@
 
 # cosmos zip is needed for APE binaries (system zip doesn't work with APE format)
 cosmos_zip_bin := $(cosmos_dir)/bin/zip
@@ -134,7 +148,7 @@ $(lua_build_dir)/sqlite3/%.o: $(lua_cosmo_dir)/third_party/sqlite3/%.c | $(lua_b
 	$(cosmocc_bin) $(lua_cflags) $(lua_sqlite_flags) -c $< -o $@
 
 # directory creation
-$(lua_build_dir)/lua $(lua_build_dir)/net $(lua_build_dir)/linenoise $(lua_build_dir)/argon2 $(lua_build_dir)/regex $(lua_build_dir)/sqlite3:
+$(lua_build_dir) $(lua_build_dir)/lua $(lua_build_dir)/net $(lua_build_dir)/linenoise $(lua_build_dir)/argon2 $(lua_build_dir)/regex $(lua_build_dir)/sqlite3:
 	mkdir -p $@
 
 results/bin:
