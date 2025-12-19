@@ -99,12 +99,15 @@ lua_bin := results/bin/lua
 
 # target for lua fat binary - use recursive make to ensure sources exist before compiling
 lua:
-	$(MAKE) $(cosmopolitan_src) $(cosmocc_bin) $(luaunit_lua_dir)/luaunit.lua
+	$(MAKE) $(cosmopolitan_src) $(cosmocc_bin) $(cosmos_bin) $(luaunit_lua_dir)/luaunit.lua
 	$(MAKE) $(lua_bin)
+
+# cosmos zip is needed for APE binaries (system zip doesn't work with APE format)
+cosmos_zip_bin := $(cosmos_dir)/bin/zip
 
 $(lua_bin): $(lua_all_objs) | results/bin
 	$(cosmocc_bin) -mcosmo $(lua_all_objs) -o $@
-	cd $(luaunit_lua_dir)/.. && $(zip) -qr $(CURDIR)/$@ $(notdir $(luaunit_lua_dir))
+	cd $(luaunit_lua_dir)/.. && $(cosmos_zip_bin) -qr $(CURDIR)/$@ $(notdir $(luaunit_lua_dir))
 
 # lua core objects (from third_party/lua)
 $(lua_build_dir)/lua/%.o: $(lua_cosmo_dir)/third_party/lua/%.c | $(lua_build_dir)/lua
